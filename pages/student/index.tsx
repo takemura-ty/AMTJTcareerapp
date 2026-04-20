@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { JOB_HUNTING_TIPS_STORAGE_KEY, JobHuntingTip, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
+import { INFORMATION_SESSIONS_STORAGE_KEY, InformationSession, isImageAsset, mergeInformationSessions } from '../../lib/informationSessions'
 
 type Workshop = { id:string; title:string; date:string; pdfUrl?:string }
 
@@ -20,9 +21,21 @@ export default function StudentIndex(){
   const [items,setItems] = useState<Workshop[]>([])
   const [idx,setIdx] = useState(0)
   const [tips, setTips] = useState<JobHuntingTip[]>(() => mergeJobHuntingTips(undefined))
+  const [sessions, setSessions] = useState<InformationSession[]>([])
 
   useEffect(()=>{
-    fetch('/api/workshops').then(r=>r.json()).then(setItems)
+    fetch('/api/workshops')
+      .then(r=>r.json())
+      .then((base: Workshop[]) => {
+        setItems(base)
+        try {
+          const raw = localStorage.getItem(INFORMATION_SESSIONS_STORAGE_KEY)
+          const parsed = raw ? JSON.parse(raw) : []
+          setSessions(mergeInformationSessions(base, parsed))
+        } catch {
+          setSessions(mergeInformationSessions(base, undefined))
+        }
+      })
   },[])
 
   useEffect(() => {
@@ -36,12 +49,12 @@ export default function StudentIndex(){
   }, [])
 
   useEffect(()=>{
-    if(items.length<=1) return
-    const t = setInterval(()=>setIdx(i=> (i+1)%items.length),4000)
+    if(sessions.length<=1) return
+    const t = setInterval(()=>setIdx(i=> (i+1)%sessions.length),4000)
     return ()=>clearInterval(t)
-  },[items])
+  },[sessions])
 
-  const current = items[idx]
+  const current = sessions[idx]
 
   return (
     <div>
@@ -131,7 +144,11 @@ export default function StudentIndex(){
               <div style={{marginTop:12,textAlign:'center'}}>
                 <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:720}}>
                   {current.pdfUrl ? (
-                    <iframe src={current.pdfUrl} style={{width:'100%',height:'100%',border:0}} />
+                    isImageAsset(current.pdfUrl) ? (
+                      <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
+                    ) : (
+                      <iframe src={current.pdfUrl} style={{width:'100%',height:'100%',border:0}} />
+                    )
                   ) : (
                     <div style={{padding:24}}><strong>{current.title}</strong></div>
                   )}
@@ -143,7 +160,7 @@ export default function StudentIndex(){
                   </div>
                 </div>
                 <div className="carousel-dots" style={{marginTop:12}}>
-                  {items.map((it,i)=> <span key={it.id} style={{background:i===idx? '#111':'#ddd'}} />)}
+                  {sessions.map((it,i)=> <span key={it.id} style={{background:i===idx? '#111':'#ddd'}} />)}
                 </div>
               </div>
             ) : (

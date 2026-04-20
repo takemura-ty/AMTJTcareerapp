@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Workshop } from '../../lib/data'
 import { INFORMATION_SESSIONS_STORAGE_KEY, InformationSession, isImageAsset, mergeInformationSessions } from '../../lib/informationSessions'
 
-export default function Workshops(){
+export default function StaffWorkshops(){
   const [items,setItems] = useState<InformationSession[]>([])
   const [idx,setIdx] = useState(0)
 
@@ -39,7 +39,7 @@ export default function Workshops(){
     <div className="container">
       <div className="header">
         <h2>勉強会案内</h2>
-        <Link href="/student" className="button outline">戻る</Link>
+        <Link href="/staff" className="button outline">戻る</Link>
       </div>
 
       <div className="card">
@@ -50,7 +50,7 @@ export default function Workshops(){
                 isImageAsset(current.pdfUrl) ? (
                   <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                 ) : (
-                  <iframe src={current.pdfUrl} style={{width:'100%',height:'100%'}} />
+                  <iframe src={current.pdfUrl} style={{width:'100%',height:'100%',border:0}} />
                 )
               ) : (
                 <div style={{padding:24}}><strong>{current.title}</strong></div>
@@ -75,14 +75,14 @@ export default function Workshops(){
         <h3 style={{marginTop:16}}>開催予定</h3>
         <ul>
           {upcoming.map(u=> (
-            <li key={u.id}><strong>{u.title}</strong> — {u.date} {u.pdfUrl && (<a href={u.pdfUrl} style={{marginLeft:8}}>PDF</a>)}</li>
+            <li key={u.id}><strong>{u.title}</strong> — {u.date} {u.pdfUrl && (<a href={u.pdfUrl} style={{marginLeft:8}} target="_blank" rel="noreferrer">資料</a>)}</li>
           ))}
         </ul>
 
         <h3 style={{marginTop:16}}>過去開催</h3>
         <ul>
           {past.map(u=> (
-            <li key={u.id}><strong>{u.title}</strong> — {u.date} {u.pdfUrl && (<a href={u.pdfUrl} style={{marginLeft:8}}>PDF</a>)}</li>
+            <li key={u.id}><strong>{u.title}</strong> — {u.date} {u.pdfUrl && (<a href={u.pdfUrl} style={{marginLeft:8}} target="_blank" rel="noreferrer">資料</a>)}</li>
           ))}
         </ul>
       </div>
