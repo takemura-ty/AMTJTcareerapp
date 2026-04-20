@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { deleteBlobIfNeeded } from '../../lib/blob'
 import { deleteJobHuntingTip, getJobHuntingTips, upsertJobHuntingTip } from '../../lib/repositories'
 import { defaultJobHuntingTips, JobHuntingTipKey } from '../../lib/jobHuntingTips'
-import { isSupabaseConfigured } from '../../lib/supabase'
+import { isSupabaseConfigured, isSupabaseWriteConfigured } from '../../lib/supabase'
 
 function getTipTitle(key: JobHuntingTipKey) {
   return defaultJobHuntingTips.find((tip) => tip.key === key)?.title || ''
@@ -15,7 +15,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (!isSupabaseConfigured()) {
-    return res.status(503).json({ error: 'Supabase is not configured' })
+    return res.status(503).json({ error: 'NEXT_PUBLIC_SUPABASE_URL または NEXT_PUBLIC_SUPABASE_ANON_KEY が未設定です。' })
+  }
+
+  if (!isSupabaseWriteConfigured()) {
+    return res.status(503).json({ error: 'SUPABASE_SERVICE_ROLE_KEY が未設定のため、JOB HUNTING TIPS を保存できません。' })
   }
 
   if (req.method === 'POST') {

@@ -39,6 +39,22 @@ export default function StaffIndex(){
     return () => clearInterval(timer)
   }, [sessions])
 
+  async function getResponseError(response: Response, fallbackMessage: string) {
+    try {
+      const data = await response.json()
+      return data?.error || fallbackMessage
+    } catch {
+      return fallbackMessage
+    }
+  }
+
+  function getThrownMessage(error: unknown, fallbackMessage: string) {
+    if (error instanceof Error && error.message) {
+      return error.message
+    }
+    return fallbackMessage
+  }
+
   async function onTipFileChange(key: JobHuntingTipKey, event: ChangeEvent<HTMLInputElement>){
     const file = event.target.files?.[0]
     if(!file) return
@@ -53,14 +69,14 @@ export default function StaffIndex(){
       })
 
       if (!response.ok) {
-        throw new Error('Failed to save job hunting tip')
+        throw new Error(await getResponseError(response, 'JOB HUNTING TIPS の保存に失敗しました。'))
       }
 
       const saved = await response.json()
       setTips((current) => current.map((tip) => tip.key === key ? saved : tip))
     } catch (error) {
       console.error(error)
-      alert('PDF の保存に失敗しました')
+      alert(getThrownMessage(error, 'PDF の保存に失敗しました'))
     } finally {
       setIsSavingTip(null)
       event.target.value = ''
@@ -71,7 +87,7 @@ export default function StaffIndex(){
     try {
       const response = await fetch(`/api/job-hunting-tips?key=${key}`, { method: 'DELETE' })
       if (!response.ok) {
-        throw new Error('Failed to delete job hunting tip')
+        throw new Error(await getResponseError(response, 'JOB HUNTING TIPS の削除に失敗しました。'))
       }
       setTips((current) => current.map((tip) => tip.key === key ? {
         ...tip,
@@ -81,7 +97,7 @@ export default function StaffIndex(){
       } : tip))
     } catch (error) {
       console.error(error)
-      alert('PDF の削除に失敗しました')
+      alert(getThrownMessage(error, 'PDF の削除に失敗しました'))
     }
   }
 
@@ -107,7 +123,7 @@ export default function StaffIndex(){
       })
 
       if (!response.ok) {
-        throw new Error('Failed to create information session')
+        throw new Error(await getResponseError(response, 'INFORMATION SESSION の保存に失敗しました。'))
       }
 
       const created = await response.json()
@@ -120,7 +136,7 @@ export default function StaffIndex(){
       form.reset()
     } catch (error) {
       console.error(error)
-      alert('資料の保存に失敗しました')
+      alert(getThrownMessage(error, '資料の保存に失敗しました'))
     } finally {
       setIsSavingSession(false)
     }
@@ -130,7 +146,7 @@ export default function StaffIndex(){
     try {
       const response = await fetch(`/api/workshops?id=${id}`, { method: 'DELETE' })
       if (!response.ok) {
-        throw new Error('Failed to delete information session')
+        throw new Error(await getResponseError(response, 'INFORMATION SESSION の削除に失敗しました。'))
       }
 
       const nextSessions = sessions.filter((item) => item.id !== id)
@@ -141,7 +157,7 @@ export default function StaffIndex(){
       })
     } catch (error) {
       console.error(error)
-      alert('資料の削除に失敗しました')
+      alert(getThrownMessage(error, '資料の削除に失敗しました'))
     }
   }
 

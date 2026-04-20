@@ -41,6 +41,7 @@ File Uploads
 - PDF and image uploads are stored in Vercel Blob.
 - Metadata for uploaded files is stored in Supabase.
 - Staff-side uploads for `JOB HUNTING TIPS` and `INFORMATION SESSION` require both Supabase and `BLOB_READ_WRITE_TOKEN` to be configured.
+- Write operations also require `SUPABASE_SERVICE_ROLE_KEY` on the server side. If this is missing, reading works but saving fails.
 
 Staff Login
 -----------

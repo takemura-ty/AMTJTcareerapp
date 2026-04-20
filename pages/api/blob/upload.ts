@@ -6,6 +6,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return res.status(503).json({ error: 'BLOB_READ_WRITE_TOKEN が未設定のため、ファイルをアップロードできません。' })
+  }
+
   try {
     const body = req.body as HandleUploadBody
     const jsonResponse = await handleUpload({
