@@ -23,7 +23,7 @@ export default function StaffIndex(){
             <p style={{color:'#666',marginTop:8,textAlign:'center',maxWidth:680,marginLeft:'auto',marginRight:'auto'}}>学生ページと同様に、見学報告書と面接報告書を確認できます。</p>
 
             <div className="report-grid">
-              <Link href="/student/reports?type=visit" className="report-card">
+              <Link href="/staff/reports?type=visit" className="report-card">
                 <div className="card-row">
                   <div className="card-icon accent-1">
                     <svg width="36" height="36" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="7" cy="11" r="2"/><circle cx="17" cy="11" r="2"/><path d="M9 11h6"/></g></svg>
@@ -35,7 +35,7 @@ export default function StaffIndex(){
                 </div>
               </Link>
 
-              <Link href="/student/reports?type=interview" className="report-card">
+              <Link href="/staff/reports?type=interview" className="report-card">
                 <div className="card-row">
                   <div className="card-icon accent-2">
                     <svg width="36" height="36" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="2.2"/><path d="M6 20c1.5-2 4-3 6-3s4.5 1 6 3"/><path d="M17 11h4v4"/></g></svg>
