@@ -30,19 +30,9 @@ create table if not exists public.job_hunting_tips (
   updated_at timestamptz not null default now()
 );
 
-create table if not exists public.staff_accounts (
-  id uuid primary key default gen_random_uuid(),
-  login_id text not null unique,
-  password_hash text not null,
-  is_active boolean not null default true,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
 alter table public.reports enable row level security;
 alter table public.workshops enable row level security;
 alter table public.job_hunting_tips enable row level security;
-alter table public.staff_accounts enable row level security;
 
 drop policy if exists "Public can read reports" on public.reports;
 create policy "Public can read reports"
@@ -58,12 +48,6 @@ drop policy if exists "Public can read job hunting tips" on public.job_hunting_t
 create policy "Public can read job hunting tips"
 on public.job_hunting_tips for select
 using (true);
-
-drop policy if exists "Service role can manage staff accounts" on public.staff_accounts;
-create policy "Service role can manage staff accounts"
-on public.staff_accounts for all
-using (auth.role() = 'service_role')
-with check (auth.role() = 'service_role');
 
 insert into public.reports (id, company, sub_company, region, type, date, major)
 values
@@ -85,11 +69,3 @@ values
   ('preparation', '就職活動マニュアル～準備編～'),
   ('interview', '就職活動マニュアル～面接編～')
 on conflict (key) do update set title = excluded.title;
-
-insert into public.staff_accounts (login_id, password_hash, is_active)
-values
-  ('toyoamtjt55', '77efd7a609b3e6a876a8cd0c6ca65e0f:cc6a60c45c302f1d8ec28c31739af1f72b9c2849177085fcb45e8bfb62bb7435a0270d8ff4a77b9be4c92b5714d05aef9af7fcf389c4049fa77d6662f0defb55', true)
-on conflict (login_id) do update set
-  password_hash = excluded.password_hash,
-  is_active = excluded.is_active,
-  updated_at = now();

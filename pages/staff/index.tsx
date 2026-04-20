@@ -5,6 +5,7 @@ import { JobHuntingTip, JobHuntingTipKey, mergeJobHuntingTips } from '../../lib/
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 import { uploadToBlob } from '../../lib/blobUpload'
 import { clearStoredUser, useRequireAuth } from '../../lib/auth'
+import { getSupabaseBrowserClient } from '../../lib/supabase-browser'
 
 export default function StaffIndex(){
   const router = useRouter()
@@ -151,7 +152,7 @@ export default function StaffIndex(){
       <div className="student-top">
         <div className="header">
           <h2>STAFF PAGE</h2>
-          <a className="button logout" onClick={()=>{clearStoredUser();router.push('/')}}>ログアウト</a>
+          <a className="button logout" onClick={async ()=>{try{await getSupabaseBrowserClient().auth.signOut()}catch{} clearStoredUser();router.push('/')}}>ログアウト</a>
         </div>
       </div>
 

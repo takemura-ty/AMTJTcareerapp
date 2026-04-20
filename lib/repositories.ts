@@ -1,7 +1,6 @@
 import { Report, reports as mockReports, Workshop, workshops as mockWorkshops } from './data'
 import { defaultJobHuntingTips, JobHuntingTip, JobHuntingTipKey, mergeJobHuntingTips } from './jobHuntingTips'
 import { getSupabaseServerClient, isSupabaseConfigured } from './supabase'
-import { scryptSync, timingSafeEqual } from 'crypto'
 
 type ReportRow = {
   id: string
@@ -28,13 +27,6 @@ type JobHuntingTipRow = {
   blob_url: string | null
   file_name: string | null
   updated_at: string | null
-}
-
-type StaffAccountRow = {
-  id: string
-  login_id: string
-  password_hash: string
-  is_active: boolean
 }
 
 function mapReportRow(row: ReportRow): Report {
@@ -68,22 +60,6 @@ function mapJobHuntingTipRow(row: JobHuntingTipRow): JobHuntingTip {
     fileName: row.file_name || undefined,
     updatedAt: row.updated_at || undefined
   }
-}
-
-function verifyPassword(password: string, storedHash: string) {
-  const [salt, hash] = storedHash.split(':')
-  if (!salt || !hash) {
-    return false
-  }
-
-  const derivedKey = scryptSync(password, salt, 64)
-  const storedKey = Buffer.from(hash, 'hex')
-
-  if (derivedKey.length !== storedKey.length) {
-    return false
-  }
-
-  return timingSafeEqual(derivedKey, storedKey)
 }
 
 export async function getReports() {
@@ -247,31 +223,4 @@ export async function deleteJobHuntingTip(key: JobHuntingTipKey) {
   }
 
   return data ? mapJobHuntingTipRow(data) : null
-}
-
-export async function validateStaffLogin(loginId: string, password: string) {
-  if (!isSupabaseConfigured()) {
-    return false
-  }
-
-  const supabase = getSupabaseServerClient()
-  if (!supabase) {
-    return false
-  }
-
-  const { data, error } = await supabase
-    .from('staff_accounts')
-    .select('id, login_id, password_hash, is_active')
-    .eq('login_id', loginId)
-    .eq('is_active', true)
-    .maybeSingle<StaffAccountRow>()
-
-  if (error || !data) {
-    if (error) {
-      console.error('Failed to validate staff login from Supabase:', error)
-    }
-    return false
-  }
-
-  return verifyPassword(password, data.password_hash)
 }

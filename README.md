@@ -45,9 +45,10 @@ File Uploads
 Staff Login
 -----------
 
-- Staff login is now managed in Supabase via the `staff_accounts` table.
-- Re-run [supabase/schema.sql](supabase/schema.sql) after pulling recent changes so the `staff_accounts` table and seed login are created.
-- Staff login is verified by the API route [pages/api/auth/staff-login.ts](pages/api/auth/staff-login.ts).
+- Staff login is managed in Supabase Authentication.
+- Create a user in Supabase Auth with the staff email address and password you want to use.
+- The current staff login ID is `career@toyoiryo.ac.jp`.
+- Staff login uses Supabase Auth directly from the login page.
 
 Next steps:
 - Supabase への書き込み処理追加
