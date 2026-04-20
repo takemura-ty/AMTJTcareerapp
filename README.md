@@ -42,6 +42,13 @@ File Uploads
 - Metadata for uploaded files is stored in Supabase.
 - Staff-side uploads for `JOB HUNTING TIPS` and `INFORMATION SESSION` require both Supabase and `BLOB_READ_WRITE_TOKEN` to be configured.
 
+Staff Login
+-----------
+
+- Staff login is now managed in Supabase via the `staff_accounts` table.
+- Re-run [supabase/schema.sql](supabase/schema.sql) after pulling recent changes so the `staff_accounts` table and seed login are created.
+- Staff login is verified by the API route [pages/api/auth/staff-login.ts](pages/api/auth/staff-login.ts).
+
 Next steps:
 - Supabase への書き込み処理追加
 - 認証の本実装

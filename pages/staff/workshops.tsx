@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
+import { useRequireAuth } from '../../lib/auth'
 
 export default function StaffWorkshops(){
+  const router = useRouter()
+  useRequireAuth(router, 'staff')
   const [items,setItems] = useState<InformationSession[]>([])
   const [idx,setIdx] = useState(0)
 

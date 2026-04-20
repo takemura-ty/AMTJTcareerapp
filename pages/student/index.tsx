@@ -3,21 +3,13 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { JobHuntingTip, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
+import { clearStoredUser, useRequireAuth } from '../../lib/auth'
 
 type Workshop = { id:string; title:string; date:string; pdfUrl?:string }
 
-function ensureAuth(router:any){
-  useEffect(()=>{
-    const raw = typeof window !== 'undefined' ? localStorage.getItem('amtjt_user') : null
-    if(!raw){
-      router.replace('/')
-    }
-  },[])
-}
-
 export default function StudentIndex(){
   const router = useRouter()
-  ensureAuth(router)
+  useRequireAuth(router)
   const [items,setItems] = useState<Workshop[]>([])
   const [idx,setIdx] = useState(0)
   const [tips, setTips] = useState<JobHuntingTip[]>(() => mergeJobHuntingTips(undefined))
@@ -53,7 +45,7 @@ export default function StudentIndex(){
         <div className="header">
           <h2>STUDENT PAGE</h2>
           <div>
-            <a className="button logout" onClick={()=>{localStorage.removeItem('amtjt_user');router.push('/')}}>ログアウト</a>
+            <a className="button logout" onClick={()=>{clearStoredUser();router.push('/')}}>ログアウト</a>
           </div>
         </div>
       </div>

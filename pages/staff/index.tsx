@@ -1,10 +1,14 @@
 import Link from 'next/link'
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 import { JobHuntingTip, JobHuntingTipKey, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 import { uploadToBlob } from '../../lib/blobUpload'
+import { clearStoredUser, useRequireAuth } from '../../lib/auth'
 
 export default function StaffIndex(){
+  const router = useRouter()
+  useRequireAuth(router, 'staff')
   const [tips, setTips] = useState<JobHuntingTip[]>(() => mergeJobHuntingTips(undefined))
   const [sessions, setSessions] = useState<InformationSession[]>([])
   const [sessionTitle, setSessionTitle] = useState('')
@@ -147,7 +151,7 @@ export default function StaffIndex(){
       <div className="student-top">
         <div className="header">
           <h2>STAFF PAGE</h2>
-          <Link href="/" className="button logout">トップへ</Link>
+          <a className="button logout" onClick={()=>{clearStoredUser();router.push('/')}}>ログアウト</a>
         </div>
       </div>
 

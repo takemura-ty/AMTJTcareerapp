@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { Report } from '../../lib/data'
+import { useRequireAuth } from '../../lib/auth'
 
 export default function StaffReports(){
   const [reports, setReports] = useState<Report[]>([])
   const [selectedRegion, setSelectedRegion] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
+  useRequireAuth(router, 'staff')
 
   const { type } = router.query
 
