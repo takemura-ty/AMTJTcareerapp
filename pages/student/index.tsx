@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import { JOB_HUNTING_TIPS_STORAGE_KEY, JobHuntingTip, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
 
 type Workshop = { id:string; title:string; date:string; pdfUrl?:string }
 
@@ -18,10 +19,21 @@ export default function StudentIndex(){
   ensureAuth(router)
   const [items,setItems] = useState<Workshop[]>([])
   const [idx,setIdx] = useState(0)
+  const [tips, setTips] = useState<JobHuntingTip[]>(() => mergeJobHuntingTips(undefined))
 
   useEffect(()=>{
     fetch('/api/workshops').then(r=>r.json()).then(setItems)
   },[])
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(JOB_HUNTING_TIPS_STORAGE_KEY)
+      const parsed = raw ? JSON.parse(raw) : []
+      setTips(mergeJobHuntingTips(parsed))
+    } catch {
+      setTips(mergeJobHuntingTips(undefined))
+    }
+  }, [])
 
   useEffect(()=>{
     if(items.length<=1) return
@@ -101,9 +113,14 @@ export default function StudentIndex(){
           <div className="panel">
             <h3 style={{textAlign:'center',fontSize:22}}>JOB HUNTING TIPS</h3>
             <p style={{color:'#666',marginTop:8,textAlign:'center',maxWidth:680,marginLeft:'auto',marginRight:'auto'}}>就職活動における準備物や面接マナーなどの豆知識をご紹介！</p>
-            <div style={{display:'flex',gap:12,justifyContent:'center',marginTop:12}}>
-              <a className="button btn-blue" href="#">就職活動マニュアル～準備編～</a>
-              <a className="button btn-blue" href="#">就職活動マニュアル～面接備編～</a>
+            <div style={{display:'flex',gap:12,justifyContent:'center',marginTop:12,flexWrap:'wrap'}}>
+              {tips.map((tip) => (
+                tip.pdfUrl ? (
+                  <a key={tip.key} className="button btn-blue" href={tip.pdfUrl} target="_blank" rel="noreferrer">{tip.title}</a>
+                ) : (
+                  <span key={tip.key} className="button btn-blue" style={{opacity:0.55,cursor:'not-allowed'}}>{tip.title} 未登録</span>
+                )
+              ))}
             </div>
           </div>
 

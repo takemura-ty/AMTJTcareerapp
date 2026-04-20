@@ -1,10 +1,60 @@
 import Link from 'next/link'
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { JOB_HUNTING_TIPS_STORAGE_KEY, JobHuntingTip, JobHuntingTipKey, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
 
 export default function StaffIndex(){
-  // mock upload handler
-  const upload = async (e:any) =>{
-    e.preventDefault()
-    alert('アップロード（モック）')
+  const [tips, setTips] = useState<JobHuntingTip[]>(() => mergeJobHuntingTips(undefined))
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(JOB_HUNTING_TIPS_STORAGE_KEY)
+      const parsed = raw ? JSON.parse(raw) : []
+      setTips(mergeJobHuntingTips(parsed))
+    } catch {
+      setTips(mergeJobHuntingTips(undefined))
+    }
+  }, [])
+
+  function readFileAsDataUrl(file: File){
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(String(reader.result || ''))
+      reader.onerror = () => reject(reader.error)
+      reader.readAsDataURL(file)
+    })
+  }
+
+  async function onTipFileChange(key: JobHuntingTipKey, event: ChangeEvent<HTMLInputElement>){
+    const file = event.target.files?.[0]
+    if(!file) return
+
+    const pdfUrl = await readFileAsDataUrl(file)
+    const nextTips = tips.map((tip) => tip.key === key ? {
+      ...tip,
+      pdfUrl,
+      fileName: file.name,
+      updatedAt: new Date().toISOString()
+    } : tip)
+
+    setTips(nextTips)
+    localStorage.setItem(JOB_HUNTING_TIPS_STORAGE_KEY, JSON.stringify(nextTips))
+    event.target.value = ''
+  }
+
+  function clearTip(key: JobHuntingTipKey){
+    const nextTips = tips.map((tip) => tip.key === key ? {
+      ...tip,
+      pdfUrl: undefined,
+      fileName: undefined,
+      updatedAt: undefined
+    } : tip)
+
+    setTips(nextTips)
+    localStorage.setItem(JOB_HUNTING_TIPS_STORAGE_KEY, JSON.stringify(nextTips))
+  }
+
+  function onSubmit(event: FormEvent<HTMLFormElement>){
+    event.preventDefault()
   }
 
   return (
@@ -50,12 +100,32 @@ export default function StaffIndex(){
           </div>
 
           <div className="panel">
-            <h3 style={{textAlign:'center',fontSize:22}}>データアップロード</h3>
-            <p style={{color:'#666',marginTop:8,textAlign:'center',maxWidth:680,marginLeft:'auto',marginRight:'auto'}}>職員向けの報告書データ取り込み機能です。現在はモック動作です。</p>
+            <h3 style={{textAlign:'center',fontSize:22}}>JOB HUNTING TIPS</h3>
+            <p style={{color:'#666',marginTop:8,textAlign:'center',maxWidth:680,marginLeft:'auto',marginRight:'auto'}}>学生ページに表示する就職活動マニュアル PDF をここで登録できます。</p>
 
-            <form onSubmit={upload} style={{maxWidth:560,margin:'18px auto 0'}}>
-              <input type="file" />
-              <div style={{marginTop:12,textAlign:'center'}}><button className="button">アップロード</button></div>
+            <form onSubmit={onSubmit} style={{display:'grid',gap:14,maxWidth:760,margin:'18px auto 0'}}>
+              {tips.map((tip) => (
+                <div key={tip.key} style={{border:'1px solid #ececec',borderRadius:10,padding:16,background:'#fafafa'}}>
+                  <div style={{display:'flex',justifyContent:'space-between',gap:12,alignItems:'flex-start',flexWrap:'wrap'}}>
+                    <div>
+                      <h4 style={{margin:'0 0 6px'}}>{tip.title}</h4>
+                      <div style={{fontSize:13,color:'#666'}}>
+                        {tip.fileName ? `${tip.fileName} を保存済み` : 'PDF 未登録'}
+                      </div>
+                      {tip.updatedAt ? (
+                        <div style={{fontSize:12,color:'#888',marginTop:4}}>更新日時: {new Date(tip.updatedAt).toLocaleString('ja-JP')}</div>
+                      ) : null}
+                    </div>
+                    <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                      {tip.pdfUrl ? <a className="button btn-blue" href={tip.pdfUrl} target="_blank" rel="noreferrer">PDF を確認</a> : null}
+                      <button type="button" className="button outline" onClick={() => clearTip(tip.key)}>削除</button>
+                    </div>
+                  </div>
+                  <div style={{marginTop:12,display:'flex',gap:10,alignItems:'center',flexWrap:'wrap'}}>
+                    <input type="file" accept=".pdf,application/pdf" onChange={(event) => onTipFileChange(tip.key, event)} />
+                  </div>
+                </div>
+              ))}
             </form>
           </div>
         </div>
