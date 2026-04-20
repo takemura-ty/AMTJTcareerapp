@@ -6,8 +6,6 @@ import Link from 'next/link'
 
 export default function Reports(){
   const [reports,setReports] = useState<Report[]>([])
-  const [region, setRegion] = useState('')
-  const [q, setQ] = useState('')
   const router = useRouter()
 
   const { type } = router.query
@@ -15,18 +13,8 @@ export default function Reports(){
   useEffect(()=>{
     fetch('/api/reports').then(r=>r.json()).then(setReports)
   },[])
-
-  const filtered = reports.filter(r=>{
-    const matchRegion = region ? r.region === region : true
-    const matchQ = q ? (r.company.includes(q) || (r.subCompany||'').includes(q)) : true
-    const matchType = type ? r.type === type : true
-    return matchRegion && matchQ && matchType
-  })
-
-  const regions = Array.from(new Set(reports.map(r=>r.region)))
   const [selectedRegion, setSelectedRegion] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
-  const [expandedCompany, setExpandedCompany] = useState<string | null>(null)
   // Full 47 prefectures in the requested order: 近畿 (指定順) → 関東 → remaining regions
   const ALL_PREFECTURES = [
     // 近畿 (user-specified order, keep 三重 after these)
@@ -47,15 +35,28 @@ export default function Reports(){
     '福岡', '佐賀', '長崎', '熊本', '大分', '宮崎', '鹿児島', '沖縄'
   ]
 
-  function sortRegions(regs:string[]){
-    const uniques = Array.from(new Set(regs))
-    // keep order defined in ALL_PREFECTURES, then any extras alphabetically
-    const ordered = ALL_PREFECTURES.filter(p=>uniques.includes(p))
-    const extras = uniques.filter(r=>!ALL_PREFECTURES.includes(r)).sort()
-    return [...ordered, ...extras]
+  function formatPrefecture(name: string){
+    if(name === '北海道') return name
+    if(name === '東京') return '東京都'
+    if(name === '大阪' || name === '京都') return `${name}府`
+    return `${name}県`
   }
 
+  const reportType = Array.isArray(type) ? type[0] : type
+  const isVisitPage = reportType === 'visit'
+  const isInterviewPage = reportType === 'interview'
   const title = type === 'visit' ? '見学報告書' : type === 'interview' ? '面接報告書' : '見学・面接報告書一覧'
+  const searchPlaceholder = isInterviewPage ? '企業名(部分一致可)' : '治療院名(部分一致可)'
+  const primaryLabel = isInterviewPage ? '企業名' : '治療院名'
+  const secondaryLabel = isInterviewPage ? '事業所名' : 'グループ名'
+  const introText = isInterviewPage
+    ? '先輩たちの面接報告を、見学報告書と同じ見やすい形式で確認できます'
+    : '先輩たちの見学報告を確認できます'
+
+  const filtered = reports
+    .filter(r => (reportType ? r.type === reportType : true))
+    .filter(r => (selectedRegion ? r.region === selectedRegion : true))
+    .filter(r => (searchQuery ? (r.company.includes(searchQuery) || (r.subCompany||'').includes(searchQuery)) : true))
 
   return (
     <div>
@@ -82,18 +83,18 @@ export default function Reports(){
         `}</style>
         <div style={{textAlign:'center'}}>
           <h2 style={{marginTop:0}}>EXAM REPORTS</h2>
-          <p style={{color:'#8b8b8b'}}>先輩たちの受験結果報告を閲覧できます</p>
+          <p style={{color:'#8b8b8b'}}>{introText}</p>
         </div>
 
         <div style={{display:'flex',gap:12,justifyContent:'center',alignItems:'center',marginTop:18,flexWrap:'wrap'}}>
           <div>
             <select value={selectedRegion} onChange={e=>setSelectedRegion(e.target.value)} style={{padding:8,borderRadius:6}}>
               <option value="">すべての都道府県</option>
-              {ALL_PREFECTURES.map(p => <option key={p} value={p}>{p + '県'}</option>)}
+              {ALL_PREFECTURES.map(p => <option key={p} value={p}>{formatPrefecture(p)}</option>)}
             </select>
           </div>
           <div style={{display:'flex',gap:8,alignItems:'center'}}>
-            <input placeholder="企業名・治療院名(部分一致可)" value={searchQuery} onChange={e=>setSearchQuery(e.target.value)} style={{padding:8,borderRadius:6,width:360}} />
+            <input placeholder={searchPlaceholder} value={searchQuery} onChange={e=>setSearchQuery(e.target.value)} style={{padding:8,borderRadius:6,width:360}} />
             <button className="button" onClick={()=>{ /* no-op: filtering is live */ }}>検索</button>
           </div>
         </div>
@@ -103,8 +104,6 @@ export default function Reports(){
           <div style={{width:'100%',maxWidth:960}}>
             {(() => {
               const list = filtered
-                .filter(r => (selectedRegion ? r.region === selectedRegion : true))
-                .filter(r => (searchQuery ? (r.company.includes(searchQuery) || (r.subCompany||'').includes(searchQuery)) : true))
               if(list.length===0) return <div style={{textAlign:'center',color:'#666'}}>該当する報告書がありません</div>
 
               // group by prefecture (region field expected to be prefecture name)
@@ -118,18 +117,32 @@ export default function Reports(){
                 <div key={pref} style={{borderTop:'1px solid #eee',padding:'18px 0'}}>
                   <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
                     <div style={{display:'flex',alignItems:'center',gap:12}}>
-                      <div style={{fontSize:18,fontWeight:700}}>{pref + '県'}</div>
+                      <div style={{fontSize:18,fontWeight:700}}>{formatPrefecture(pref)}</div>
                       <div style={{background:'#f0f0f0',padding:'4px 8px',borderRadius:6,color:'#666'}}>{byPref[pref].length}</div>
                     </div>
                   </div>
-                  <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12}}>
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:12}}>
                     {byPref[pref].map(r => (
-                      <div key={r.id} style={{padding:'12px 16px',borderRadius:6,background:'#fafafa',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                        <div>
-                          <div style={{fontWeight:700}}>{r.subCompany ? `${r.company}　${r.subCompany}` : r.company}</div>
-                          <div style={{color:'#666',fontSize:13,marginTop:6}}>{r.date} — {r.major}</div>
+                      <div key={r.id} style={{padding:'16px 18px',borderRadius:10,background:'#fafafa',border:'1px solid #ececec',display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:12}}>
+                        <div style={{flex:1}}>
+                          <div style={{display:'grid',gap:10}}>
+                            <div>
+                              <div style={{fontSize:12,color:'#7a7a7a',marginBottom:4}}>{primaryLabel}</div>
+                              <div style={{fontWeight:700,fontSize:16,lineHeight:1.5}}>{r.company}</div>
+                            </div>
+                            {r.subCompany ? (
+                              <div>
+                                <div style={{fontSize:12,color:'#7a7a7a',marginBottom:4}}>{secondaryLabel}</div>
+                                <div style={{fontWeight:600,lineHeight:1.5}}>{r.subCompany}</div>
+                              </div>
+                            ) : null}
+                            <div style={{display:'flex',gap:12,flexWrap:'wrap',color:'#666',fontSize:13}}>
+                              <span>{r.date}</span>
+                              <span>{r.major === 'shinkyu' ? '鍼灸師学科' : '柔道整復師学科'}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div style={{color:'#bbb'}}>›</div>
+                        <div style={{color:'#bbb',fontSize:20,lineHeight:1}}>›</div>
                       </div>
                     ))}
                   </div>
