@@ -2,6 +2,14 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'GET') {
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return res.status(503).json({ error: 'BLOB_READ_WRITE_TOKEN が未設定です。Vercel Project Settings の Environment Variables に追加してください。' })
+    }
+
+    return res.status(200).json({ ok: true })
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
