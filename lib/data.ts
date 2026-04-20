@@ -20,6 +20,8 @@ export type Workshop = {
   title: string
   date: string
   pdfUrl?: string
+  fileName?: string
+  updatedAt?: string
 }
 
 export const workshops: Workshop[] = [

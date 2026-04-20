@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Workshop } from '../../lib/data'
-import { INFORMATION_SESSIONS_STORAGE_KEY, InformationSession, isImageAsset, mergeInformationSessions } from '../../lib/informationSessions'
+import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 
 export default function StaffWorkshops(){
   const [items,setItems] = useState<InformationSession[]>([])
@@ -10,15 +9,7 @@ export default function StaffWorkshops(){
   useEffect(()=>{
     fetch('/api/workshops')
       .then(r=>r.json())
-      .then((base: Workshop[]) => {
-        try{
-          const raw = localStorage.getItem(INFORMATION_SESSIONS_STORAGE_KEY)
-          const parsed = raw ? JSON.parse(raw) : []
-          setItems(mergeInformationSessions(base, parsed))
-        }catch(e){
-          setItems(mergeInformationSessions(base, undefined))
-        }
-      })
+      .then(setItems)
   },[])
 
   useEffect(()=>{

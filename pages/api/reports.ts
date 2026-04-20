@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { reports } from '../../lib/data'
+import { getReports } from '../../lib/repositories'
 
-export default function handler(_req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(_req: NextApiRequest, res: NextApiResponse) {
+  const reports = await getReports()
   res.status(200).json(reports)
 }

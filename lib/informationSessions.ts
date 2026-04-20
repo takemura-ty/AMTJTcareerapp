@@ -5,8 +5,6 @@ export type InformationSession = Workshop & {
   updatedAt?: string
 }
 
-export const INFORMATION_SESSIONS_STORAGE_KEY = 'amtjt_information_sessions'
-
 export function mergeInformationSessions(base: Workshop[], saved: Partial<InformationSession>[] | null | undefined): InformationSession[] {
   const normalizedSaved = (saved || [])
     .filter((item): item is InformationSession => Boolean(item?.id && item?.title && item?.date && item?.pdfUrl))

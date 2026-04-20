@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
-import { JOB_HUNTING_TIPS_STORAGE_KEY, JobHuntingTip, JobHuntingTipKey, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
-import { INFORMATION_SESSIONS_STORAGE_KEY, InformationSession, isImageAsset, mergeInformationSessions } from '../../lib/informationSessions'
+import { JobHuntingTip, JobHuntingTipKey, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
+import { InformationSession, isImageAsset } from '../../lib/informationSessions'
+import { uploadToBlob } from '../../lib/blobUpload'
 
 export default function StaffIndex(){
   const [tips, setTips] = useState<JobHuntingTip[]>(() => mergeJobHuntingTips(undefined))
@@ -10,29 +11,21 @@ export default function StaffIndex(){
   const [sessionDate, setSessionDate] = useState(new Date().toISOString().slice(0,10))
   const [sessionFile, setSessionFile] = useState<File | null>(null)
   const [sessionIdx, setSessionIdx] = useState(0)
+  const [isSavingTip, setIsSavingTip] = useState<JobHuntingTipKey | null>(null)
+  const [isSavingSession, setIsSavingSession] = useState(false)
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(JOB_HUNTING_TIPS_STORAGE_KEY)
-      const parsed = raw ? JSON.parse(raw) : []
-      setTips(mergeJobHuntingTips(parsed))
-    } catch {
-      setTips(mergeJobHuntingTips(undefined))
-    }
+    fetch('/api/job-hunting-tips')
+      .then((r) => r.json())
+      .then((data) => setTips(mergeJobHuntingTips(data)))
+      .catch(() => setTips(mergeJobHuntingTips(undefined)))
   }, [])
 
   useEffect(() => {
     fetch('/api/workshops')
       .then((r) => r.json())
-      .then((base) => {
-        try {
-          const raw = localStorage.getItem(INFORMATION_SESSIONS_STORAGE_KEY)
-          const parsed = raw ? JSON.parse(raw) : []
-          setSessions(mergeInformationSessions(base, parsed))
-        } catch {
-          setSessions(mergeInformationSessions(base, undefined))
-        }
-      })
+      .then((base) => setSessions(base))
+      .catch(() => setSessions([]))
   }, [])
 
   useEffect(() => {
@@ -41,42 +34,50 @@ export default function StaffIndex(){
     return () => clearInterval(timer)
   }, [sessions])
 
-  function readFileAsDataUrl(file: File){
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(String(reader.result || ''))
-      reader.onerror = () => reject(reader.error)
-      reader.readAsDataURL(file)
-    })
-  }
-
   async function onTipFileChange(key: JobHuntingTipKey, event: ChangeEvent<HTMLInputElement>){
     const file = event.target.files?.[0]
     if(!file) return
 
-    const pdfUrl = await readFileAsDataUrl(file)
-    const nextTips = tips.map((tip) => tip.key === key ? {
-      ...tip,
-      pdfUrl,
-      fileName: file.name,
-      updatedAt: new Date().toISOString()
-    } : tip)
+    setIsSavingTip(key)
+    try {
+      const blob = await uploadToBlob('job-hunting-tips', file)
+      const response = await fetch('/api/job-hunting-tips', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, pdfUrl: blob.url, fileName: file.name })
+      })
 
-    setTips(nextTips)
-    localStorage.setItem(JOB_HUNTING_TIPS_STORAGE_KEY, JSON.stringify(nextTips))
-    event.target.value = ''
+      if (!response.ok) {
+        throw new Error('Failed to save job hunting tip')
+      }
+
+      const saved = await response.json()
+      setTips((current) => current.map((tip) => tip.key === key ? saved : tip))
+    } catch (error) {
+      console.error(error)
+      alert('PDF の保存に失敗しました')
+    } finally {
+      setIsSavingTip(null)
+      event.target.value = ''
+    }
   }
 
-  function clearTip(key: JobHuntingTipKey){
-    const nextTips = tips.map((tip) => tip.key === key ? {
-      ...tip,
-      pdfUrl: undefined,
-      fileName: undefined,
-      updatedAt: undefined
-    } : tip)
-
-    setTips(nextTips)
-    localStorage.setItem(JOB_HUNTING_TIPS_STORAGE_KEY, JSON.stringify(nextTips))
+  async function clearTip(key: JobHuntingTipKey){
+    try {
+      const response = await fetch(`/api/job-hunting-tips?key=${key}`, { method: 'DELETE' })
+      if (!response.ok) {
+        throw new Error('Failed to delete job hunting tip')
+      }
+      setTips((current) => current.map((tip) => tip.key === key ? {
+        ...tip,
+        pdfUrl: undefined,
+        fileName: undefined,
+        updatedAt: undefined
+      } : tip))
+    } catch (error) {
+      console.error(error)
+      alert('PDF の削除に失敗しました')
+    }
   }
 
   function onSubmit(event: FormEvent<HTMLFormElement>){
@@ -91,37 +92,52 @@ export default function StaffIndex(){
     event.preventDefault()
     if(!sessionTitle || !sessionDate || !sessionFile) return
 
-    const assetUrl = await readFileAsDataUrl(sessionFile)
-    const nextSession: InformationSession = {
-      id: `staff-session-${Date.now()}`,
-      title: sessionTitle,
-      date: sessionDate,
-      pdfUrl: assetUrl,
-      fileName: sessionFile.name,
-      updatedAt: new Date().toISOString()
-    }
+    setIsSavingSession(true)
+    try {
+      const blob = await uploadToBlob('information-sessions', sessionFile)
+      const response = await fetch('/api/workshops', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: sessionTitle, date: sessionDate, pdfUrl: blob.url, fileName: sessionFile.name })
+      })
 
-    const savedOnly = [nextSession, ...sessions.filter((item) => item.updatedAt)]
-    const nextSessions = [nextSession, ...sessions]
-    setSessions(nextSessions)
-    setSessionIdx(0)
-    localStorage.setItem(INFORMATION_SESSIONS_STORAGE_KEY, JSON.stringify(savedOnly))
-    setSessionTitle('')
-    setSessionDate(new Date().toISOString().slice(0,10))
-    setSessionFile(null)
-    const form = event.currentTarget
-    form.reset()
+      if (!response.ok) {
+        throw new Error('Failed to create information session')
+      }
+
+      const created = await response.json()
+      setSessions((current) => [created, ...current])
+      setSessionIdx(0)
+      setSessionTitle('')
+      setSessionDate(new Date().toISOString().slice(0,10))
+      setSessionFile(null)
+      const form = event.currentTarget
+      form.reset()
+    } catch (error) {
+      console.error(error)
+      alert('資料の保存に失敗しました')
+    } finally {
+      setIsSavingSession(false)
+    }
   }
 
-  function removeSession(id: string){
-    const nextSessions = sessions.filter((item) => item.id !== id)
-    setSessions(nextSessions)
-    setSessionIdx((current) => {
-      if(nextSessions.length === 0) return 0
-      return Math.min(current, nextSessions.length - 1)
-    })
-    const savedOnly = nextSessions.filter((item) => item.updatedAt)
-    localStorage.setItem(INFORMATION_SESSIONS_STORAGE_KEY, JSON.stringify(savedOnly))
+  async function removeSession(id: string){
+    try {
+      const response = await fetch(`/api/workshops?id=${id}`, { method: 'DELETE' })
+      if (!response.ok) {
+        throw new Error('Failed to delete information session')
+      }
+
+      const nextSessions = sessions.filter((item) => item.id !== id)
+      setSessions(nextSessions)
+      setSessionIdx((current) => {
+        if(nextSessions.length === 0) return 0
+        return Math.min(current, nextSessions.length - 1)
+      })
+    } catch (error) {
+      console.error(error)
+      alert('資料の削除に失敗しました')
+    }
   }
 
   const currentSession = sessions[sessionIdx]
@@ -192,6 +208,7 @@ export default function StaffIndex(){
                   </div>
                   <div style={{marginTop:12,display:'flex',gap:10,alignItems:'center',flexWrap:'wrap'}}>
                     <input type="file" accept=".pdf,application/pdf" onChange={(event) => onTipFileChange(tip.key, event)} />
+                    {isSavingTip === tip.key ? <span style={{fontSize:12,color:'#666'}}>アップロード中...</span> : null}
                   </div>
                 </div>
               ))}
@@ -244,7 +261,7 @@ export default function StaffIndex(){
                 <input type="file" accept=".pdf,application/pdf,image/*" onChange={onSessionFileChange} />
               </label>
               <div style={{display:'flex',justifyContent:'center'}}>
-                <button className="button btn-blue" type="submit">資料を追加</button>
+                <button className="button btn-blue" type="submit" disabled={isSavingSession}>{isSavingSession ? '保存中...' : '資料を追加'}</button>
               </div>
             </form>
 

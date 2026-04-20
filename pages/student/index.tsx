@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { JOB_HUNTING_TIPS_STORAGE_KEY, JobHuntingTip, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
-import { INFORMATION_SESSIONS_STORAGE_KEY, InformationSession, isImageAsset, mergeInformationSessions } from '../../lib/informationSessions'
+import { JobHuntingTip, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
+import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 
 type Workshop = { id:string; title:string; date:string; pdfUrl?:string }
 
@@ -28,24 +28,15 @@ export default function StudentIndex(){
       .then(r=>r.json())
       .then((base: Workshop[]) => {
         setItems(base)
-        try {
-          const raw = localStorage.getItem(INFORMATION_SESSIONS_STORAGE_KEY)
-          const parsed = raw ? JSON.parse(raw) : []
-          setSessions(mergeInformationSessions(base, parsed))
-        } catch {
-          setSessions(mergeInformationSessions(base, undefined))
-        }
+        setSessions(base)
       })
   },[])
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(JOB_HUNTING_TIPS_STORAGE_KEY)
-      const parsed = raw ? JSON.parse(raw) : []
-      setTips(mergeJobHuntingTips(parsed))
-    } catch {
-      setTips(mergeJobHuntingTips(undefined))
-    }
+    fetch('/api/job-hunting-tips')
+      .then((r) => r.json())
+      .then((data) => setTips(mergeJobHuntingTips(data)))
+      .catch(() => setTips(mergeJobHuntingTips(undefined)))
   }, [])
 
   useEffect(()=>{

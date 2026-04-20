@@ -8,8 +8,6 @@ export type JobHuntingTip = {
   updatedAt?: string
 }
 
-export const JOB_HUNTING_TIPS_STORAGE_KEY = 'amtjt_job_hunting_tips'
-
 export const defaultJobHuntingTips: JobHuntingTip[] = [
   { key: 'preparation', title: '就職活動マニュアル～準備編～' },
   { key: 'interview', title: '就職活動マニュアル～面接編～' }
