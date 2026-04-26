@@ -48,6 +48,19 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
           line-height: 1.6;
         }
 
+        .location-row {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .location-pin {
+          width: 18px;
+          height: 18px;
+          color: var(--hinata-blue);
+          flex: 0 0 18px;
+        }
+
         .back-button {
           display: inline-flex;
           align-items: center;
@@ -152,8 +165,15 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
               <div>
                 <h3>{selectedClinic.company}</h3>
                 <div className="detail-subtitle">
-                  {formatPrefecture(selectedClinic.region)}
-                  {selectedClinic.city ? ` / ${selectedClinic.city}` : ''}
+                  <span className="location-row">
+                    <svg className="location-pin" viewBox="0 0 24 24" aria-hidden="true">
+                      <path fill="currentColor" d="M12 22s-6.5-6.12-6.5-11.34C5.5 6.15 8.41 3 12 3s6.5 3.15 6.5 7.66C18.5 15.88 12 22 12 22Zm0-10.16a2.77 2.77 0 1 0 0-5.54 2.77 2.77 0 0 0 0 5.54Z" />
+                    </svg>
+                    <span>
+                      {formatPrefecture(selectedClinic.region)}
+                      {selectedClinic.city ? ` / ${selectedClinic.city}` : ''}
+                    </span>
+                  </span>
                   <br />
                   最終更新日: {selectedClinic.updatedAt}
                 </div>

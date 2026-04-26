@@ -99,6 +99,19 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
           font-weight: 700;
         }
 
+        .prefecture-name {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .prefecture-pin {
+          width: 18px;
+          height: 18px;
+          color: var(--hinata-blue);
+          flex: 0 0 18px;
+        }
+
         .city-name {
           font-size: 14px;
           color: #3f5563;
@@ -192,7 +205,12 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
 
                   return (
                     <div key={prefecture} className="prefecture-block">
-                      <h4 className="prefecture-name">{formatPrefecture(prefecture)}</h4>
+                      <h4 className="prefecture-name">
+                        <svg className="prefecture-pin" viewBox="0 0 24 24" aria-hidden="true">
+                          <path fill="currentColor" d="M12 22s-6.5-6.12-6.5-11.34C5.5 6.15 8.41 3 12 3s6.5 3.15 6.5 7.66C18.5 15.88 12 22 12 22Zm0-10.16a2.77 2.77 0 1 0 0-5.54 2.77 2.77 0 0 0 0 5.54Z" />
+                        </svg>
+                        {formatPrefecture(prefecture)}
+                      </h4>
                       {[...groupedByCity.entries()].sort((left, right) => left[0].localeCompare(right[0], 'ja')).map(([city, cityGroups]) => (
                         <div key={city}>
                           <div className="city-name">{city}</div>
@@ -218,7 +236,12 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
 
                 return (
                   <div key={prefecture} className="prefecture-block">
-                    <h4 className="prefecture-name">{formatPrefecture(prefecture)}</h4>
+                    <h4 className="prefecture-name">
+                      <svg className="prefecture-pin" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M12 22s-6.5-6.12-6.5-11.34C5.5 6.15 8.41 3 12 3s6.5 3.15 6.5 7.66C18.5 15.88 12 22 12 22Zm0-10.16a2.77 2.77 0 1 0 0-5.54 2.77 2.77 0 0 0 0 5.54Z" />
+                      </svg>
+                      {formatPrefecture(prefecture)}
+                    </h4>
                     <div className="clinic-grid">
                       {groups.map(group => (
                         <button
