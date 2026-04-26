@@ -7,9 +7,17 @@ type ReportRow = {
   company: string
   sub_company: string | null
   region: string
+  city: string | null
   type: Report['type']
   date: string
   major: Report['major']
+  updated_at: string | null
+  supervisor_impression: string | null
+  staff_impression: string | null
+  clinic_impression: string | null
+  other_notes: string | null
+  interview_wish: string | null
+  advice: string | null
 }
 
 type WorkshopRow = {
@@ -35,9 +43,17 @@ function mapReportRow(row: ReportRow): Report {
     company: row.company,
     subCompany: row.sub_company || undefined,
     region: row.region,
+    city: row.city || undefined,
     type: row.type,
     date: row.date,
-    major: row.major
+    major: row.major,
+    updatedAt: row.updated_at || undefined,
+    supervisorImpression: row.supervisor_impression || undefined,
+    staffImpression: row.staff_impression || undefined,
+    clinicImpression: row.clinic_impression || undefined,
+    otherNotes: row.other_notes || undefined,
+    interviewWish: row.interview_wish || undefined,
+    advice: row.advice || undefined
   }
 }
 
@@ -74,7 +90,7 @@ export async function getReports() {
 
   const { data, error } = await supabase
     .from('reports')
-    .select('id, company, sub_company, region, type, date, major')
+    .select('id, company, sub_company, region, city, type, date, major, updated_at, supervisor_impression, staff_impression, clinic_impression, other_notes, interview_wish, advice')
     .order('date', { ascending: false })
 
   if (error || !data) {
