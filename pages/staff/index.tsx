@@ -182,7 +182,7 @@ export default function StaffIndex(){
               <Link href="/staff/reports?type=visit" className="report-card">
                 <div className="card-row">
                   <div className="card-icon accent-1">
-                    <svg width="36" height="36" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="7" cy="11" r="2"/><circle cx="17" cy="11" r="2"/><path d="M9 11h6"/></g></svg>
+                    <svg width="36" height="36" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="none" stroke="#fff" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><path d="M10.5 5.5a5 5 0 1 0 0 10a5 5 0 0 0 0-10Z"/><path d="m14 14 4.5 4.5"/><path d="M7.5 10.5h6"/><path d="M10.5 7.5v6"/></g></svg>
                   </div>
                   <div>
                     <h4>見学報告書</h4>
@@ -194,7 +194,7 @@ export default function StaffIndex(){
               <Link href="/staff/reports?type=interview" className="report-card">
                 <div className="card-row">
                   <div className="card-icon accent-2">
-                    <svg width="36" height="36" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="2.2"/><path d="M6 20c1.5-2 4-3 6-3s4.5 1 6 3"/><path d="M17 11h4v4"/></g></svg>
+                    <svg width="36" height="36" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="7" cy="8" r="1.8"/><circle cx="17" cy="8" r="1.8"/><path d="M4.8 14.2c.7-1.4 2.1-2.2 3.7-2.2s3 .8 3.7 2.2"/><path d="M13 14.2c.7-1.4 2.1-2.2 3.7-2.2s3 .8 3.7 2.2"/><path d="M5.5 11.5v4.5"/><path d="M18.5 11.5v4.5"/><path d="M8.8 11.8h6.4"/><path d="M9.5 16.3h5"/></g></svg>
                   </div>
                   <div>
                     <h4>面接報告書</h4>
