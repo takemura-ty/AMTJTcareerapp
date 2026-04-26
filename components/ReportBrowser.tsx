@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
 import type { Report } from '../lib/data'
 import { CITY_SPLIT_PREFECTURES, type ClinicGroup, formatPrefecture, groupByClinic, PREFECTURES } from '../lib/reportGroups'
 
@@ -11,6 +11,11 @@ type ReportBrowserProps = {
 
 export default function ReportBrowser({ reports, reportType, detailPath }: ReportBrowserProps) {
   const [selectedRegion, setSelectedRegion] = useState('')
+  const router = useRouter()
+
+  function openClinicDetail(clinicKey: string) {
+    router.push({ pathname: detailPath, query: { type: reportType, clinic: clinicKey } })
+  }
 
   const filteredReports = useMemo(() => {
     const nextReports = reports
@@ -114,7 +119,8 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
           background: #f8fbfd;
           border-radius: 12px;
           padding: 14px;
-          text-decoration: none;
+          color: inherit;
+          cursor: pointer;
           transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
           min-height: 132px;
           box-sizing: border-box;
@@ -192,15 +198,16 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
                           <div className="city-name">{city}</div>
                           <div className="clinic-grid">
                             {cityGroups.map(group => (
-                              <Link
+                              <button
                                 key={group.key}
-                                href={{ pathname: detailPath, query: { type: reportType, clinic: group.key } }}
+                                type="button"
                                 className="clinic-button"
+                                onClick={() => openClinicDetail(group.key)}
                               >
                                 <span className="clinic-name">{group.company}</span>
                                 <span className="meta">最終更新日: {group.updatedAt}</span>
                                 <span className="meta">報告書: {group.reports.length}件</span>
-                              </Link>
+                              </button>
                             ))}
                           </div>
                         </div>
@@ -214,16 +221,17 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
                     <h4 className="prefecture-name">{formatPrefecture(prefecture)}</h4>
                     <div className="clinic-grid">
                       {groups.map(group => (
-                        <Link
+                        <button
                           key={group.key}
-                          href={{ pathname: detailPath, query: { type: reportType, clinic: group.key } }}
+                          type="button"
                           className="clinic-button"
+                          onClick={() => openClinicDetail(group.key)}
                         >
                           <span className="clinic-name">{group.company}</span>
                           {group.city ? <span className="meta">{group.city}</span> : null}
                           <span className="meta">最終更新日: {group.updatedAt}</span>
                           <span className="meta">報告書: {group.reports.length}件</span>
-                        </Link>
+                        </button>
                       ))}
                     </div>
                   </div>
