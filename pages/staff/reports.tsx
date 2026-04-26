@@ -59,7 +59,7 @@ export default function StaffReports(){
             </form>
           </div>
 
-          <ReportBrowser reports={reports} reportType={reportType} />
+          <ReportBrowser reports={reports} reportType={reportType} detailPath="/staff/report-detail" />
         </div>
       </div>
     </div>

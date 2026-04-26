@@ -40,7 +40,7 @@ export default function Reports(){
           <p style={{color:'#8b8b8b'}}>{introText}</p>
         </div>
 
-        <ReportBrowser reports={reports} reportType={reportType} />
+        <ReportBrowser reports={reports} reportType={reportType} detailPath="/student/report-detail" />
       </div>
     </div>
   </div>
