@@ -194,7 +194,7 @@ export default function StaffIndex(){
               <Link href="/staff/reports?type=interview" className="report-card">
                 <div className="card-row">
                   <div className="card-icon accent-2">
-                    <svg width="40" height="40" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 4.5h7l2 2v11a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-11a2 2 0 0 1 2-2h2"/><path d="M8.8 4.5v3h6.4v-3"/><path d="M8.2 11h7.6"/><path d="M8.2 14.5h4.2"/><path d="m13.8 16.2 1.4 1.4 2.8-3.1"/></g></svg>
+                    <svg width="38" height="38" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="none" stroke="#fff" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 4.75h7l2 2.2v10.8a1.9 1.9 0 0 1-1.9 1.9h-7.2a1.9 1.9 0 0 1-1.9-1.9V6.65a1.9 1.9 0 0 1 1.9-1.9Z"/><path d="M11.4 4.75h1.2"/><path d="M14.5 4.75v3.1h3"/><path d="M9 10.8h6"/><path d="M9 13.7h6"/><path d="M9 16.6h4.6"/></g></svg>
                   </div>
                   <div>
                     <h4>面接報告書</h4>
