@@ -142,25 +142,6 @@ export default function StaffIndex(){
     }
   }
 
-  async function removeSession(id: string){
-    try {
-      const response = await fetch(`/api/workshops?id=${id}`, { method: 'DELETE' })
-      if (!response.ok) {
-        throw new Error(await getResponseError(response, 'INFORMATION SESSION の削除に失敗しました。'))
-      }
-
-      const nextSessions = sessions.filter((item) => item.id !== id)
-      setSessions(nextSessions)
-      setSessionIdx((current) => {
-        if(nextSessions.length === 0) return 0
-        return Math.min(current, nextSessions.length - 1)
-      })
-    } catch (error) {
-      console.error(error)
-      alert(getThrownMessage(error, '資料の削除に失敗しました'))
-    }
-  }
-
   const currentSession = sessions[sessionIdx]
 
   return (
@@ -254,8 +235,29 @@ export default function StaffIndex(){
                 </div>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:12,gap:10}}>
                   <div style={{fontSize:14,color:'#666'}}><strong>{currentSession.title}</strong> — {currentSession.date}</div>
-                  <div>
-                    <Link href="/staff/workshops" className="button btn-blue">詳しくはこちら</Link>
+                  <div style={{display:'grid',gap:14,width:'100%',maxWidth:760}}>
+                    <div>
+                      <Link href="/staff/workshops" className="button btn-blue">アップロード＆詳細はこちら</Link>
+                    </div>
+                    <form onSubmit={onSessionSubmit} style={{display:'grid',gap:12,textAlign:'left'}}>
+                      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:12}}>
+                        <label>
+                          タイトル
+                          <input value={sessionTitle} onChange={(event) => setSessionTitle(event.target.value)} placeholder="例: 学外説明会 2026" />
+                        </label>
+                        <label>
+                          開催日
+                          <input type="date" value={sessionDate} onChange={(event) => setSessionDate(event.target.value)} />
+                        </label>
+                      </div>
+                      <label>
+                        PDF または写真
+                        <input type="file" accept=".pdf,application/pdf,image/*" onChange={onSessionFileChange} />
+                      </label>
+                      <div style={{display:'flex',justifyContent:'center'}}>
+                        <button className="button btn-blue" type="submit" disabled={isSavingSession}>{isSavingSession ? '保存中...' : '資料を追加'}</button>
+                      </div>
+                    </form>
                   </div>
                 </div>
                 <div className="carousel-dots" style={{marginTop:12}}>
@@ -263,45 +265,29 @@ export default function StaffIndex(){
                 </div>
               </div>
             ) : (
-              <div style={{marginTop:12,textAlign:'center',color:'#666'}}>資料がありません</div>
-            )}
-
-            <form onSubmit={onSessionSubmit} style={{display:'grid',gap:12,maxWidth:760,margin:'20px auto 0'}}>
-              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:12}}>
-                <label>
-                  タイトル
-                  <input value={sessionTitle} onChange={(event) => setSessionTitle(event.target.value)} placeholder="例: 学外説明会 2026" />
-                </label>
-                <label>
-                  開催日
-                  <input type="date" value={sessionDate} onChange={(event) => setSessionDate(event.target.value)} />
-                </label>
-              </div>
-              <label>
-                PDF または写真
-                <input type="file" accept=".pdf,application/pdf,image/*" onChange={onSessionFileChange} />
-              </label>
-              <div style={{display:'flex',justifyContent:'center'}}>
-                <button className="button btn-blue" type="submit" disabled={isSavingSession}>{isSavingSession ? '保存中...' : '資料を追加'}</button>
-              </div>
-            </form>
-
-            {sessions.length > 0 ? (
-              <div style={{marginTop:18,display:'grid',gap:10}}>
-                {sessions.filter((item) => item.updatedAt).map((item) => (
-                  <div key={item.id} style={{display:'flex',justifyContent:'space-between',gap:12,alignItems:'center',padding:'12px 14px',border:'1px solid #ececec',borderRadius:8,background:'#fafafa',flexWrap:'wrap'}}>
-                    <div>
-                      <strong>{item.title}</strong>
-                      <div style={{fontSize:13,color:'#666'}}>{item.date}{item.fileName ? ` / ${item.fileName}` : ''}</div>
-                    </div>
-                    <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-                      {item.pdfUrl ? <a className="button btn-blue" href={item.pdfUrl} target="_blank" rel="noreferrer">確認</a> : null}
-                      <button type="button" className="button outline" onClick={() => removeSession(item.id)}>削除</button>
-                    </div>
+              <div style={{marginTop:12,display:'grid',gap:16,maxWidth:760,marginLeft:'auto',marginRight:'auto'}}>
+                <div style={{textAlign:'center',color:'#666'}}>資料がありません</div>
+                <form onSubmit={onSessionSubmit} style={{display:'grid',gap:12}}>
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:12}}>
+                    <label>
+                      タイトル
+                      <input value={sessionTitle} onChange={(event) => setSessionTitle(event.target.value)} placeholder="例: 学外説明会 2026" />
+                    </label>
+                    <label>
+                      開催日
+                      <input type="date" value={sessionDate} onChange={(event) => setSessionDate(event.target.value)} />
+                    </label>
                   </div>
-                ))}
+                  <label>
+                    PDF または写真
+                    <input type="file" accept=".pdf,application/pdf,image/*" onChange={onSessionFileChange} />
+                  </label>
+                  <div style={{display:'flex',justifyContent:'center'}}>
+                    <button className="button btn-blue" type="submit" disabled={isSavingSession}>{isSavingSession ? '保存中...' : '資料を追加'}</button>
+                  </div>
+                </form>
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </div>
