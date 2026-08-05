@@ -1,5 +1,5 @@
 async function ensureBlobUploadReady() {
-  const response = await fetch('/api/blob/upload')
+  const response = await fetch('/api/storage/upload')
 
   if (!response.ok) {
     try {
@@ -15,9 +15,9 @@ async function ensureBlobUploadReady() {
   }
 }
 
-export async function uploadToBlob(pathPrefix: string, file: File) {
+export async function uploadToStorage(pathPrefix: string, file: File) {
   await ensureBlobUploadReady()
-  const response = await fetch('/api/blob/upload-file', {
+  const response = await fetch('/api/storage/upload', {
     method: 'POST',
     headers: {
       'Content-Type': file.type || 'application/octet-stream',

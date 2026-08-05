@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { put } from '@vercel/blob'
+import { getSupabaseServerClient, isSupabaseWriteConfigured } from '../../../lib/supabase'
 
+const STORAGE_BUCKET = 'career-files'
 const MAX_UPLOAD_BYTES = 4 * 1024 * 1024
 const ALLOWED_PATH_PREFIXES = new Set(['job-hunting-tips', 'information-sessions'])
 const ALLOWED_CONTENT_TYPES = new Set([
@@ -38,12 +39,20 @@ async function readRequestBody(req: NextApiRequest) {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method === 'GET') {
+    return res.status(isSupabaseWriteConfigured() ? 200 : 503).json(
+      isSupabaseWriteConfigured()
+        ? { ok: true }
+        : { error: 'SUPABASE_SERVICE_ROLE_KEY が未設定です。' }
+    )
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return res.status(503).json({ error: 'BLOB_READ_WRITE_TOKEN が未設定です。' })
+  if (!isSupabaseWriteConfigured()) {
+    return res.status(503).json({ error: 'SUPABASE_SERVICE_ROLE_KEY が未設定です。' })
   }
 
   const pathPrefix = String(req.headers['x-upload-path-prefix'] || '')
@@ -57,17 +66,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const body = await readRequestBody(req)
     const filename = sanitizeFilename(decodeURIComponent(encodedFileName))
-    const blob = await put(`${pathPrefix}/${Date.now()}-${filename}`, body, {
-      access: 'public',
-      contentType
+    const path = `${pathPrefix}/${Date.now()}-${filename}`
+    const supabase = getSupabaseServerClient()
+    if (!supabase) {
+      throw new Error('Supabase is not configured')
+    }
+
+    const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(path, body, {
+      contentType,
+      upsert: false
     })
-    return res.status(200).json({ url: blob.url })
+    if (error) {
+      throw error
+    }
+
+    const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path)
+    return res.status(200).json({ url: data.publicUrl })
   } catch (error) {
     if (error instanceof Error && error.message === 'FILE_TOO_LARGE') {
       return res.status(413).json({ error: 'ファイルサイズは4MB以下にしてください。' })
     }
 
-    console.error('Blob file upload failed', error)
-    return res.status(500).json({ error: 'Vercel Blobへのファイル保存に失敗しました。' })
+    console.error('Supabase Storage upload failed', error)
+    return res.status(500).json({ error: 'Supabase Storageへのファイル保存に失敗しました。バケット設定を確認してください。' })
   }
 }

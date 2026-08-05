@@ -3,7 +3,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { JobHuntingTip, JobHuntingTipKey, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
-import { uploadToBlob } from '../../lib/blobUpload'
+import { uploadToStorage } from '../../lib/blobUpload'
 import { clearStoredUser, useRequireAuth } from '../../lib/auth'
 import { getSupabaseBrowserClient } from '../../lib/supabase-browser'
 
@@ -61,7 +61,7 @@ export default function StaffIndex(){
 
     setIsSavingTip(key)
     try {
-      const blob = await uploadToBlob('job-hunting-tips', file)
+      const blob = await uploadToStorage('job-hunting-tips', file)
       const response = await fetch('/api/job-hunting-tips', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -115,7 +115,7 @@ export default function StaffIndex(){
 
     setIsSavingSession(true)
     try {
-      const blob = await uploadToBlob('information-sessions', sessionFile)
+      const blob = await uploadToStorage('information-sessions', sessionFile)
       const response = await fetch('/api/workshops', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

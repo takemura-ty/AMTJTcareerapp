@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { deleteBlobIfNeeded } from '../../lib/blob'
+import { deleteStorageFileIfNeeded } from '../../lib/storage'
 import { deleteJobHuntingTip, getJobHuntingTips, upsertJobHuntingTip } from '../../lib/repositories'
 import { defaultJobHuntingTips, JobHuntingTipKey } from '../../lib/jobHuntingTips'
 import { isSupabaseConfigured, isSupabaseWriteConfigured } from '../../lib/supabase'
@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       const deleted = await deleteJobHuntingTip(key)
-      await deleteBlobIfNeeded(deleted?.pdfUrl)
+      await deleteStorageFileIfNeeded(deleted?.pdfUrl)
       return res.status(200).json({ ok: true })
     } catch (error) {
       console.error(error)

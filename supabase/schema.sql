@@ -32,6 +32,10 @@ create table if not exists public.workshops (
 alter table public.workshops add column if not exists file_name text;
 alter table public.workshops add column if not exists updated_at timestamptz not null default now();
 
+insert into storage.buckets (id, name, public)
+values ('career-files', 'career-files', true)
+on conflict (id) do update set public = true;
+
 create table if not exists public.job_hunting_tips (
   key text primary key check (key in ('preparation', 'interview')),
   title text not null,
@@ -91,6 +95,10 @@ values
   ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '就職対策講座', '2026-03-15', '/pdfs/seminar2.pdf'),
   ('cccccccc-cccc-cccc-cccc-cccccccccccc', '最新治療事例', '2026-06-01', '/pdfs/seminar3.pdf')
 on conflict (id) do nothing;
+
+update public.workshops
+set pdf_url = null
+where pdf_url like '/pdfs/%';
 
 insert into public.job_hunting_tips (key, title)
 values

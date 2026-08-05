@@ -27,7 +27,6 @@ Supabase Setup
 NEXT_PUBLIC_SUPABASE_URL=your-project-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-BLOB_READ_WRITE_TOKEN=your-vercel-blob-read-write-token
 ```
 
 3. Run the SQL in [supabase/schema.sql](supabase/schema.sql) inside the Supabase SQL Editor.
@@ -38,10 +37,9 @@ If the environment variables are not set, the app continues to use the existing 
 File Uploads
 ------------
 
-- PDF and image uploads are stored in Vercel Blob.
-- Metadata for uploaded files is stored in Supabase.
-- Staff-side uploads for `JOB HUNTING TIPS` and `INFORMATION SESSION` require both Supabase and `BLOB_READ_WRITE_TOKEN` to be configured.
-- Write operations also require `SUPABASE_SERVICE_ROLE_KEY` on the server side. If this is missing, reading works but saving fails.
+- PDF and image uploads and their metadata are stored in Supabase.
+- Run [supabase/schema.sql](supabase/schema.sql) to create the public `career-files` Storage bucket.
+- Staff-side uploads for `JOB HUNTING TIPS` and `INFORMATION SESSION` require `SUPABASE_SERVICE_ROLE_KEY` on the server side. If this is missing, reading works but saving fails.
 
 Staff Login
 -----------
