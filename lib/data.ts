@@ -127,7 +127,7 @@ export type Workshop = {
 }
 
 export const workshops: Workshop[] = [
-  { id: 'w1', title: '治療技術セミナー', date: '2026-05-10', pdfUrl: '/pdfs/seminar1.pdf' },
-  { id: 'w2', title: '就職対策講座', date: '2026-03-15', pdfUrl: '/pdfs/seminar2.pdf' },
-  { id: 'w3', title: '最新治療事例', date: '2026-06-01', pdfUrl: '/pdfs/seminar3.pdf' }
+  { id: 'w1', title: '治療技術セミナー', date: '2026-05-10' },
+  { id: 'w2', title: '就職対策講座', date: '2026-03-15' },
+  { id: 'w3', title: '最新治療事例', date: '2026-06-01' }
 ]

@@ -62,7 +62,7 @@ function mapWorkshopRow(row: WorkshopRow): Workshop {
     id: row.id,
     title: row.title,
     date: row.date,
-    pdfUrl: row.pdf_url || undefined,
+    pdfUrl: row.pdf_url?.startsWith('/pdfs/') ? undefined : row.pdf_url || undefined,
     fileName: row.file_name || undefined,
     updatedAt: row.updated_at || undefined
   }
