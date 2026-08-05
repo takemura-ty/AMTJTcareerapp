@@ -11,6 +11,7 @@ const ALLOWED_CONTENT_TYPES = new Set([
   'image/webp',
   'image/gif'
 ])
+let storageBucketReady: Promise<void> | null = null
 
 export const config = {
   api: {
@@ -38,21 +39,60 @@ async function readRequestBody(req: NextApiRequest) {
   return Buffer.concat(chunks)
 }
 
+async function ensureStorageBucket() {
+  if (storageBucketReady) {
+    return storageBucketReady
+  }
+
+  storageBucketReady = (async () => {
+    const supabase = getSupabaseServerClient()
+    if (!supabase) {
+      throw new Error('Supabase is not configured')
+    }
+
+    const { data: bucket, error: getBucketError } = await supabase.storage.getBucket(STORAGE_BUCKET)
+    if (getBucketError) {
+      const { error: createBucketError } = await supabase.storage.createBucket(STORAGE_BUCKET, { public: true })
+      if (createBucketError) {
+        throw createBucketError
+      }
+      return
+    }
+
+    if (!bucket.public) {
+      const { error: updateBucketError } = await supabase.storage.updateBucket(STORAGE_BUCKET, { public: true })
+      if (updateBucketError) {
+        throw updateBucketError
+      }
+    }
+  })()
+
+  try {
+    await storageBucketReady
+  } catch (error) {
+    storageBucketReady = null
+    throw error
+  }
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (!isSupabaseWriteConfigured()) {
+    return res.status(503).json({ error: 'SUPABASE_SERVICE_ROLE_KEY が未設定です。' })
+  }
+
+  try {
+    await ensureStorageBucket()
+  } catch (error) {
+    console.error('Supabase Storage bucket setup failed', error)
+    return res.status(500).json({ error: 'Supabase Storageバケットの作成に失敗しました。SUPABASE_SERVICE_ROLE_KEY を確認してください。' })
+  }
+
   if (req.method === 'GET') {
-    return res.status(isSupabaseWriteConfigured() ? 200 : 503).json(
-      isSupabaseWriteConfigured()
-        ? { ok: true }
-        : { error: 'SUPABASE_SERVICE_ROLE_KEY が未設定です。' }
-    )
+    return res.status(200).json({ ok: true })
   }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
-  }
-
-  if (!isSupabaseWriteConfigured()) {
-    return res.status(503).json({ error: 'SUPABASE_SERVICE_ROLE_KEY が未設定です。' })
   }
 
   const pathPrefix = String(req.headers['x-upload-path-prefix'] || '')

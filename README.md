@@ -38,7 +38,7 @@ File Uploads
 ------------
 
 - PDF and image uploads and their metadata are stored in Supabase.
-- Run [supabase/schema.sql](supabase/schema.sql) to create the public `career-files` Storage bucket.
+- `career-files` Storage bucket is created automatically on the first upload.
 - Staff-side uploads for `JOB HUNTING TIPS` and `INFORMATION SESSION` require `SUPABASE_SERVICE_ROLE_KEY` on the server side. If this is missing, reading works but saving fails.
 
 Staff Login
