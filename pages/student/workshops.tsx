@@ -50,11 +50,11 @@ export default function Workshops(){
           >
             {current.pdfUrl ? (
               <a className="workshop-open-link workshop-preview" href={current.pdfUrl} target="_blank" rel="noreferrer" aria-label={`${current.title}の資料を開く`}>
-                isImageAsset(current.pdfUrl) ? (
+                {isImageAsset(current.pdfUrl) ? (
                   <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                 ) : (
                   <DocumentPreview src={current.pdfUrl} title={current.title} />
-                )
+                )}
               </a>
             ) : (
               <div className="workshop-preview">

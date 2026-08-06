@@ -236,11 +236,11 @@ export default function StaffIndex(){
               >
                 {currentSession.pdfUrl ? (
                   <a className="workshop-open-link preview-frame" href={currentSession.pdfUrl} target="_blank" rel="noreferrer" aria-label={`${currentSession.title}の資料を開く`} style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
-                    isImageAsset(currentSession.pdfUrl) ? (
+                    {isImageAsset(currentSession.pdfUrl) ? (
                       <img src={currentSession.pdfUrl} alt={currentSession.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                     ) : (
                       <DocumentPreview src={currentSession.pdfUrl} title={currentSession.title} />
-                    )
+                    )}
                   </a>
                 ) : (
                   <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
