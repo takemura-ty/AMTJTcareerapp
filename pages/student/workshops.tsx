@@ -30,7 +30,7 @@ export default function Workshops(){
   return (
     <div className="container">
       <div className="header">
-        <h2>勉強会案内</h2>
+        <h2>INFORMATION SESSION</h2>
         <Link href="/student" className="button outline">戻る</Link>
       </div>
 
@@ -64,7 +64,7 @@ export default function Workshops(){
         )}
 
         <h3 className="workshop-list-title">開催予定</h3>
-        <div className="workshop-list">
+        <div className="workshop-list student-workshop-list">
           {upcoming.map(u=> (
             <article className="workshop-item" key={u.id}>
               <div>
@@ -77,7 +77,7 @@ export default function Workshops(){
         </div>
 
         <h3 className="workshop-list-title">過去開催</h3>
-        <div className="workshop-list">
+        <div className="workshop-list student-workshop-list">
           {past.map(u=> (
             <article className="workshop-item" key={u.id}>
               <div>

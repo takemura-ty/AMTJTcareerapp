@@ -91,6 +91,7 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
 .workshop-list-title{margin:28px 0 12px;font-size:18px}
 .workshop-list{display:grid;gap:10px}
 .staff-workshop-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+.student-workshop-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 .workshop-item{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px;border:1px solid #d9e3eb;border-radius:8px;background:#f8fbfd;box-shadow:0 4px 12px rgba(7,22,28,0.04)}
 .workshop-item>div:first-child{min-width:0;flex:1}
 .workshop-item strong,.workshop-item span{display:block}
@@ -142,6 +143,7 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
   .workshop-summary,.workshop-item{align-items:stretch;flex-direction:column}
   .workshop-item .button{align-self:flex-start}
   .staff-workshop-list{grid-template-columns:1fr}
+  .student-workshop-list{grid-template-columns:1fr}
   .workshop-edit-form{grid-template-columns:1fr}
   .workshop-edit-actions{align-items:center}
   .carousel-dots{justify-content:flex-start;max-width:100%;overflow-x:auto;padding:4px 2px;scroll-snap-type:x mandatory}
