@@ -89,16 +89,12 @@ values
   ('66666666-6666-6666-6666-666666666666', '神戸中央治療院', null, '兵庫', '神戸市', 'visit', '2026-04-15', 'judo', '2026-04-20', '見学担当の方が現場で必要な姿勢を具体例つきで説明してくださいました。', 'スタッフの皆さんが患者様への声掛けを大切にしている印象でした。', 'リハビリスペースが広く、チームで患者様を診る体制が整っていました。', '自費メニューの説明もあり、運営面も参考になりました。', '希望します。', '神戸市内でも院ごとに特色が違うので、複数比較するとよいです。')
 on conflict (id) do nothing;
 
-insert into public.workshops (id, title, date, pdf_url)
-values
-  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '治療技術セミナー', '2026-05-10', '/pdfs/seminar1.pdf'),
-  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '就職対策講座', '2026-03-15', '/pdfs/seminar2.pdf'),
-  ('cccccccc-cccc-cccc-cccc-cccccccccccc', '最新治療事例', '2026-06-01', '/pdfs/seminar3.pdf')
-on conflict (id) do nothing;
-
-update public.workshops
-set pdf_url = null
-where pdf_url like '/pdfs/%';
+delete from public.workshops
+where id in (
+  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+  'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+  'cccccccc-cccc-cccc-cccc-cccccccccccc'
+);
 
 insert into public.job_hunting_tips (key, title)
 values

@@ -126,8 +126,4 @@ export type Workshop = {
   updatedAt?: string
 }
 
-export const workshops: Workshop[] = [
-  { id: 'w1', title: '治療技術セミナー', date: '2026-05-10' },
-  { id: 'w2', title: '就職対策講座', date: '2026-03-15' },
-  { id: 'w3', title: '最新治療事例', date: '2026-06-01' }
-]
+export const workshops: Workshop[] = []

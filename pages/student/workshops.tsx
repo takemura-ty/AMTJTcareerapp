@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import DocumentPreview from '../../components/DocumentPreview'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 
 export default function Workshops(){
@@ -36,12 +37,12 @@ export default function Workshops(){
       <div className="card">
         {current && (
           <div style={{display:'flex',gap:12,alignItems:'center',flexDirection:'column'}}>
-            <div style={{width:'100%',height:420,background:'#f3f3f3',display:'flex',alignItems:'center',justifyContent:'center'}}>
+            <div className="workshop-preview">
               {current.pdfUrl ? (
                 isImageAsset(current.pdfUrl) ? (
                   <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                 ) : (
-                  <iframe src={current.pdfUrl} style={{width:'100%',height:'100%'}} />
+                  <DocumentPreview src={current.pdfUrl} title={current.title} />
                 )
               ) : (
                 <div style={{padding:24}}><strong>{current.title}</strong></div>

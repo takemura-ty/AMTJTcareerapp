@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import DocumentPreview from '../../components/DocumentPreview'
 import { JobHuntingTip, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 import { clearStoredUser, useRequireAuth } from '../../lib/auth'
@@ -130,7 +131,7 @@ export default function StudentIndex(){
                     isImageAsset(current.pdfUrl) ? (
                       <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                     ) : (
-                      <iframe src={`${current.pdfUrl}#view=Fit`} title={current.title} style={{width:'100%',height:'100%',border:0}} />
+                      <DocumentPreview src={current.pdfUrl} title={current.title} />
                     )
                   ) : (
                     <div style={{padding:24}}><strong>{current.title}</strong></div>

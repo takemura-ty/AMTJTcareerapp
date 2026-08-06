@@ -81,6 +81,9 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
 .button.btn-judo{background:var(--brand-green) !important;color:#fff !important}
 .button.btn-blue{background:var(--hinata-blue) !important;color:#fff !important}
 .panel .preview-frame{width:100%;aspect-ratio:1 / 1.45;border:1px solid #e9e9e9;border-radius:6px;overflow:hidden}
+.document-preview{display:block;width:100%;height:auto;background:#fff}
+.document-preview-error{display:flex;width:100%;height:100%;align-items:center;justify-content:center;background:#fff;color:var(--hinata-blue)}
+.workshop-preview{width:100%;max-width:720px;aspect-ratio:1 / 1.45;background:#fff;overflow:hidden}
 .carousel-dots{display:flex;gap:6px;justify-content:center;margin-top:8px}
 .carousel-dots span{width:10px;height:10px;border-radius:10px;display:inline-block}
 
