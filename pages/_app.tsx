@@ -8,7 +8,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       <meta name="viewport" content="width=device-width, initial-scale=1" />
     </Head>
     <aside className="career-side-mark" aria-hidden="true">
-      <span>TOYO CAREER CENTER</span>
+      <div className="career-side-mark-track">
+        <span>TOYO CAREER CENTER</span>
+        <span>TOYO CAREER CENTER</span>
+      </div>
     </aside>
     <Component {...pageProps} />
   </>
