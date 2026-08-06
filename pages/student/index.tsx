@@ -130,7 +130,7 @@ export default function StudentIndex(){
                     isImageAsset(current.pdfUrl) ? (
                       <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                     ) : (
-                      <iframe src={current.pdfUrl} style={{width:'100%',height:'100%',border:0}} />
+                      <iframe src={`${current.pdfUrl}#view=Fit`} title={current.title} style={{width:'100%',height:'100%',border:0}} />
                     )
                   ) : (
                     <div style={{padding:24}}><strong>{current.title}</strong></div>
