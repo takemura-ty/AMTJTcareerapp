@@ -37,6 +37,12 @@ type JobHuntingTipRow = {
   updated_at: string | null
 }
 
+const mockWorkshopKeys = new Set([
+  '最新治療事例|2026-06-01',
+  '治療技術セミナー|2026-05-10',
+  '就職対策講座|2026-03-15'
+])
+
 function mapReportRow(row: ReportRow): Report {
   return {
     id: row.id,
@@ -121,7 +127,9 @@ export async function getWorkshops() {
     return mockWorkshops
   }
 
-  return data.map(mapWorkshopRow)
+  return data
+    .map(mapWorkshopRow)
+    .filter((workshop) => !mockWorkshopKeys.has(`${workshop.title}|${workshop.date}`))
 }
 
 export async function createWorkshop(input: { title: string; date: string; pdfUrl: string; fileName?: string }) {

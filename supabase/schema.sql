@@ -90,10 +90,10 @@ values
 on conflict (id) do nothing;
 
 delete from public.workshops
-where id in (
-  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
-  'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
-  'cccccccc-cccc-cccc-cccc-cccccccccccc'
+where (title, date) in (
+  ('最新治療事例', '2026-06-01'),
+  ('治療技術セミナー', '2026-05-10'),
+  ('就職対策講座', '2026-03-15')
 );
 
 insert into public.job_hunting_tips (key, title)

@@ -15,6 +15,7 @@ export default function StudentIndex(){
   const [idx,setIdx] = useState(0)
   const [tips, setTips] = useState<JobHuntingTip[]>(() => mergeJobHuntingTips(undefined))
   const [sessions, setSessions] = useState<InformationSession[]>([])
+  const [touchStartX, setTouchStartX] = useState<number | null>(null)
 
   useEffect(()=>{
     fetch('/api/workshops')
@@ -125,8 +126,18 @@ export default function StudentIndex(){
             <h3 style={{textAlign:'center',fontSize:22}}>INFORMATION SESSION</h3>
             <p style={{color:'#666',marginTop:8,textAlign:'center',maxWidth:680,marginLeft:'auto',marginRight:'auto'}}>勉強会や外部の説明会の情報を公開しています。詳しくは詳細ページへ。</p>
             {current ? (
-              <div style={{marginTop:12,textAlign:'center'}}>
-                <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:720}}>
+              <div
+                style={{marginTop:12,textAlign:'center'}}
+                onTouchStart={(event) => setTouchStartX(event.touches[0].clientX)}
+                onTouchEnd={(event) => {
+                  if (touchStartX === null) return
+                  const distance = touchStartX - event.changedTouches[0].clientX
+                  setTouchStartX(null)
+                  if (Math.abs(distance) < 50) return
+                  setIdx((currentIdx) => (currentIdx + (distance > 0 ? 1 : sessions.length - 1)) % sessions.length)
+                }}
+              >
+                <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
                   {current.pdfUrl ? (
                     isImageAsset(current.pdfUrl) ? (
                       <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
@@ -144,7 +155,9 @@ export default function StudentIndex(){
                   </div>
                 </div>
                 <div className="carousel-dots" style={{marginTop:12}}>
-                  {sessions.map((it,i)=> <span key={it.id} style={{background:i===idx? '#111':'#ddd'}} />)}
+                  {sessions.map((it,i)=> (
+                    <button key={it.id} type="button" className="carousel-dot" aria-label={`${it.title}を表示`} aria-pressed={i===idx} onClick={() => setIdx(i)} />
+                  ))}
                 </div>
               </div>
             ) : (
