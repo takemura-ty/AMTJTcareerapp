@@ -19,6 +19,14 @@ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic P
 a.button{background:var(--brand-orange);color:#fff;padding:8px 12px;border-radius:6px;text-decoration:none;display:inline-block;border:none}
 input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:100%;box-sizing:border-box}
 
+.career-side-mark{display:none}
+@media (min-width:1100px){
+  .career-side-mark{display:flex;position:fixed;z-index:1;left:32px;bottom:9vh;align-items:center;gap:12px;color:var(--hinata-blue);pointer-events:none}
+  .career-side-mark::before{content:"";width:2px;height:76px;background:var(--hinata-blue)}
+  .career-side-mark::after{content:"";width:8px;height:8px;border:2px solid var(--hinata-blue);border-radius:50%}
+  .career-side-mark span{font-size:14px;font-weight:700;letter-spacing:2px;writing-mode:vertical-rl;transform:rotate(180deg)}
+}
+
 .announcement{margin:16px 0 24px}
 .announcement-list{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
 .announcement-card{display:flex;align-items:center;background:var(--card);padding:14px;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,0.04);width:420px}
