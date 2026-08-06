@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import DocumentPreview from '../../components/DocumentPreview'
 import { JobHuntingTip, JobHuntingTipKey, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 import { uploadToStorage } from '../../lib/blobUpload'
@@ -227,7 +228,7 @@ export default function StaffIndex(){
                     isImageAsset(currentSession.pdfUrl) ? (
                       <img src={currentSession.pdfUrl} alt={currentSession.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                     ) : (
-                      <iframe src={currentSession.pdfUrl} style={{width:'100%',height:'100%',border:0}} />
+                      <DocumentPreview src={currentSession.pdfUrl} title={currentSession.title} />
                     )
                   ) : (
                     <div style={{padding:24}}><strong>{currentSession.title}</strong></div>
