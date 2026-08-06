@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { deleteStorageFileIfNeeded } from '../../lib/storage'
-import { createWorkshop, deleteWorkshop, getWorkshops } from '../../lib/repositories'
+import { createWorkshop, deleteWorkshop, getWorkshops, updateWorkshop } from '../../lib/repositories'
 import { isSupabaseConfigured, isSupabaseWriteConfigured } from '../../lib/supabase'
 
 export default async function handler(_req: NextApiRequest, res: NextApiResponse) {
@@ -29,6 +29,22 @@ export default async function handler(_req: NextApiRequest, res: NextApiResponse
     } catch (error) {
       console.error(error)
       return res.status(500).json({ error: 'Failed to create workshop' })
+    }
+  }
+
+  if (_req.method === 'PATCH') {
+    const id = String(_req.query.id || '')
+    const { title, date } = _req.body || {}
+    if (!id || !title || !date) {
+      return res.status(400).json({ error: 'id, title and date are required' })
+    }
+
+    try {
+      const workshop = await updateWorkshop(id, { title, date })
+      return res.status(200).json(workshop)
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json({ error: 'Failed to update workshop' })
     }
   }
 

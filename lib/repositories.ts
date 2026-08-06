@@ -160,6 +160,30 @@ export async function createWorkshop(input: { title: string; date: string; pdfUr
   return mapWorkshopRow(data)
 }
 
+export async function updateWorkshop(id: string, input: { title: string; date: string }) {
+  const supabase = getSupabaseServerClient()
+  if (!supabase) {
+    throw new Error('Supabase is not configured')
+  }
+
+  const { data, error } = await supabase
+    .from('workshops')
+    .update({
+      title: input.title,
+      date: input.date,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', id)
+    .select('id, title, date, pdf_url, file_name, updated_at')
+    .single()
+
+  if (error || !data) {
+    throw error || new Error('Failed to update workshop')
+  }
+
+  return mapWorkshopRow(data)
+}
+
 export async function deleteWorkshop(id: string) {
   const supabase = getSupabaseServerClient()
   if (!supabase) {
