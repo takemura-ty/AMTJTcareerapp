@@ -6,6 +6,7 @@ import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 export default function Workshops(){
   const [items,setItems] = useState<InformationSession[]>([])
   const [idx,setIdx] = useState(0)
+  const [touchStartX, setTouchStartX] = useState<number | null>(null)
 
   useEffect(()=>{
     fetch('/api/workshops')
@@ -36,7 +37,17 @@ export default function Workshops(){
 
       <div className="card">
         {current && (
-          <div style={{display:'flex',gap:12,alignItems:'center',flexDirection:'column'}}>
+          <div
+            style={{display:'flex',gap:12,alignItems:'center',flexDirection:'column'}}
+            onTouchStart={(event) => setTouchStartX(event.touches[0].clientX)}
+            onTouchEnd={(event) => {
+              if (touchStartX === null) return
+              const distance = touchStartX - event.changedTouches[0].clientX
+              setTouchStartX(null)
+              if (Math.abs(distance) < 50) return
+              setIdx((currentIdx) => (currentIdx + (distance > 0 ? 1 : items.length - 1)) % items.length)
+            }}
+          >
             <div className="workshop-preview">
               {current.pdfUrl ? (
                 isImageAsset(current.pdfUrl) ? (
@@ -55,9 +66,9 @@ export default function Workshops(){
               </div>
               <a className="button btn-blue" href={current.pdfUrl||'#'} target="_blank" rel="noreferrer">資料を開く</a>
             </div>
-            <div style={{marginTop:8}}>
+            <div className="carousel-dots" style={{marginTop:8}}>
               {items.map((it,i)=> (
-                <span key={it.id} style={{display:'inline-block',width:10,height:10,borderRadius:10,background:i===idx? '#111':'#ddd',margin:6}} />
+                <button key={it.id} type="button" className="carousel-dot" aria-label={`${it.title}を表示`} aria-pressed={i===idx} onClick={() => setIdx(i)} />
               ))}
             </div>
           </div>
