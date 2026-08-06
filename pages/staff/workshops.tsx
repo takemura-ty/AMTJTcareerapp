@@ -22,12 +22,12 @@ export default function StaffWorkshops(){
   },[])
 
   useEffect(()=>{
-    if(items.length<=1) return
+    if(items.length<=1 || editingId) return
     const t = setInterval(()=>{
       setIdx(i=> (i+1) % items.length)
     },4000)
     return ()=>clearInterval(t)
-  },[items])
+  },[items, editingId])
 
   async function removeWorkshop(id: string) {
     if (!window.confirm('この資料を削除しますか？')) return
@@ -46,6 +46,7 @@ export default function StaffWorkshops(){
   }
 
   function startEditing(workshop: InformationSession) {
+    setIdx(items.findIndex((item) => item.id === workshop.id))
     setEditingId(workshop.id)
     setEditTitle(workshop.title)
     setEditDate(workshop.date)
@@ -113,7 +114,6 @@ export default function StaffWorkshops(){
                 <button type="button" className="button danger" onClick={() => removeWorkshop(current.id)}>削除</button>
               </div>
             </div>
-            {editingId === current.id && <WorkshopEditForm />}
             <div style={{marginTop:8}}>
               {items.map((it,i)=> (
                 <span key={it.id} style={{display:'inline-block',width:10,height:10,borderRadius:10,background:i===idx? '#111':'#ddd',margin:6}} />
@@ -121,6 +121,8 @@ export default function StaffWorkshops(){
             </div>
           </div>
         )}
+
+        {editingId && <WorkshopEditForm />}
 
         <h3 className="workshop-list-title">開催予定</h3>
         <div className="workshop-list staff-workshop-list">
@@ -137,7 +139,6 @@ export default function StaffWorkshops(){
                   <button type="button" className="button danger" onClick={() => removeWorkshop(u.id)}>削除</button>
                 </div>
               </article>
-              {editingId === u.id && <WorkshopEditForm />}
             </Fragment>
           ))}
         </div>
@@ -157,7 +158,6 @@ export default function StaffWorkshops(){
                   <button type="button" className="button danger" onClick={() => removeWorkshop(u.id)}>削除</button>
                 </div>
               </article>
-              {editingId === u.id && <WorkshopEditForm />}
             </Fragment>
           ))}
         </div>
