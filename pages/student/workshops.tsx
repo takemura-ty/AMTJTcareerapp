@@ -48,13 +48,12 @@ export default function Workshops(){
                 <div style={{padding:24}}><strong>{current.title}</strong></div>
               )}
             </div>
-            <div style={{width:'100%',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-              <div>
-                <strong>{current.title}</strong> <div style={{fontSize:12,color:'#666'}}>{current.date}</div>
+            <div className="workshop-summary">
+              <div className="session-summary">
+                <strong className="session-title">{current.title}</strong>
+                <span className="session-date">{current.date} 開催</span>
               </div>
-              <div>
-                <a className="button" href={current.pdfUrl||'#'} target="_blank" rel="noreferrer">詳しくはこちら</a>
-              </div>
+              <a className="button btn-blue" href={current.pdfUrl||'#'} target="_blank" rel="noreferrer">資料を開く</a>
             </div>
             <div style={{marginTop:8}}>
               {items.map((it,i)=> (
@@ -64,19 +63,31 @@ export default function Workshops(){
           </div>
         )}
 
-        <h3 style={{marginTop:16}}>開催予定</h3>
-        <ul>
+        <h3 className="workshop-list-title">開催予定</h3>
+        <div className="workshop-list">
           {upcoming.map(u=> (
-            <li key={u.id}><strong>{u.title}</strong> — {u.date} {u.pdfUrl && (<a href={u.pdfUrl} style={{marginLeft:8}}>PDF</a>)}</li>
+            <article className="workshop-item" key={u.id}>
+              <div>
+                <strong>{u.title}</strong>
+                <span>{u.date} 開催</span>
+              </div>
+              {u.pdfUrl && <a className="button btn-blue" href={u.pdfUrl} target="_blank" rel="noreferrer">資料を開く</a>}
+            </article>
           ))}
-        </ul>
+        </div>
 
-        <h3 style={{marginTop:16}}>過去開催</h3>
-        <ul>
+        <h3 className="workshop-list-title">過去開催</h3>
+        <div className="workshop-list">
           {past.map(u=> (
-            <li key={u.id}><strong>{u.title}</strong> — {u.date} {u.pdfUrl && (<a href={u.pdfUrl} style={{marginLeft:8}}>PDF</a>)}</li>
+            <article className="workshop-item" key={u.id}>
+              <div>
+                <strong>{u.title}</strong>
+                <span>{u.date} 開催</span>
+              </div>
+              {u.pdfUrl && <a className="button btn-blue" href={u.pdfUrl} target="_blank" rel="noreferrer">資料を開く</a>}
+            </article>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   )

@@ -83,7 +83,18 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
 .panel .preview-frame{width:100%;aspect-ratio:1 / 1.45;border:1px solid #e9e9e9;border-radius:6px;overflow:hidden}
 .document-preview{display:block;width:100%;height:auto;background:#fff}
 .document-preview-error{display:flex;width:100%;height:100%;align-items:center;justify-content:center;background:#fff;color:var(--hinata-blue)}
-.workshop-preview{width:100%;max-width:720px;aspect-ratio:1 / 1.45;background:#fff;overflow:hidden}
+.session-summary{display:grid;gap:4px;text-align:center}
+.session-title{color:var(--hinata-blue-dark);font-size:18px;line-height:1.4}
+.session-date{color:#52616b;font-size:14px}
+.workshop-preview{width:100%;max-width:480px;aspect-ratio:1 / 1.45;background:#fff;overflow:hidden}
+.workshop-summary{width:100%;max-width:640px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.workshop-list-title{margin:28px 0 12px;font-size:18px}
+.workshop-list{display:grid;gap:10px}
+.workshop-item{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px;border:1px solid #d9e3eb;border-radius:8px;background:#f8fbfd;box-shadow:0 4px 12px rgba(7,22,28,0.04)}
+.workshop-item strong,.workshop-item span{display:block}
+.workshop-item strong{margin-bottom:4px;color:#183a50}
+.workshop-item span{font-size:13px;color:#56646f}
+.button.danger{background:var(--brand-red)}
 .carousel-dots{display:flex;gap:6px;justify-content:center;margin-top:8px}
 .carousel-dot{width:10px;height:10px;padding:0;border:0;border-radius:50%;background:#ddd;cursor:pointer;flex:0 0 10px}
 .carousel-dot[aria-pressed="true"]{background:#111}
@@ -122,6 +133,9 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
   .panel .panel-row{align-items:stretch;flex-direction:column}
   .panel .panel-actions{flex-direction:column}
   .panel .panel-actions .button{width:100%;box-sizing:border-box;text-align:center}
+  .session-title{font-size:16px}
+  .workshop-summary,.workshop-item{align-items:stretch;flex-direction:column}
+  .workshop-item .button{align-self:flex-start}
   .carousel-dots{justify-content:flex-start;max-width:100%;overflow-x:auto;padding:4px 2px;scroll-snap-type:x mandatory}
   .carousel-dot{scroll-snap-align:center}
   .report-grid{gap:12px}

@@ -25,6 +25,22 @@ export default function StaffWorkshops(){
     return ()=>clearInterval(t)
   },[items])
 
+  async function removeWorkshop(id: string) {
+    if (!window.confirm('この資料を削除しますか？')) return
+
+    const response = await fetch(`/api/workshops?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+    if (!response.ok) {
+      alert('資料の削除に失敗しました。')
+      return
+    }
+
+    setItems((currentItems) => {
+      const remainingItems = currentItems.filter((item) => item.id !== id)
+      setIdx((currentIdx) => Math.min(currentIdx, Math.max(remainingItems.length - 1, 0)))
+      return remainingItems
+    })
+  }
+
   const now = new Date().toISOString().slice(0,10)
   const upcoming = items.filter(i=>i.date >= now).sort((a,b)=>a.date.localeCompare(b.date))
   const past = items.filter(i=>i.date < now).sort((a,b)=>b.date.localeCompare(a.date))
@@ -52,12 +68,14 @@ export default function StaffWorkshops(){
                 <div style={{padding:24}}><strong>{current.title}</strong></div>
               )}
             </div>
-            <div style={{width:'100%',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-              <div>
-                <strong>{current.title}</strong> <div style={{fontSize:12,color:'#666'}}>{current.date}</div>
+            <div className="workshop-summary">
+              <div className="session-summary">
+                <strong className="session-title">{current.title}</strong>
+                <span className="session-date">{current.date} 開催</span>
               </div>
-              <div>
-                <a className="button" href={current.pdfUrl||'#'} target="_blank" rel="noreferrer">詳しくはこちら</a>
+              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                <a className="button btn-blue" href={current.pdfUrl||'#'} target="_blank" rel="noreferrer">資料を開く</a>
+                <button type="button" className="button danger" onClick={() => removeWorkshop(current.id)}>削除</button>
               </div>
             </div>
             <div style={{marginTop:8}}>
@@ -68,19 +86,37 @@ export default function StaffWorkshops(){
           </div>
         )}
 
-        <h3 style={{marginTop:16}}>開催予定</h3>
-        <ul>
+        <h3 className="workshop-list-title">開催予定</h3>
+        <div className="workshop-list">
           {upcoming.map(u=> (
-            <li key={u.id}><strong>{u.title}</strong> — {u.date} {u.pdfUrl && (<a href={u.pdfUrl} style={{marginLeft:8}} target="_blank" rel="noreferrer">資料</a>)}</li>
+            <article className="workshop-item" key={u.id}>
+              <div>
+                <strong>{u.title}</strong>
+                <span>{u.date} 開催</span>
+              </div>
+              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                {u.pdfUrl && <a className="button btn-blue" href={u.pdfUrl} target="_blank" rel="noreferrer">資料を開く</a>}
+                <button type="button" className="button danger" onClick={() => removeWorkshop(u.id)}>削除</button>
+              </div>
+            </article>
           ))}
-        </ul>
+        </div>
 
-        <h3 style={{marginTop:16}}>過去開催</h3>
-        <ul>
+        <h3 className="workshop-list-title">過去開催</h3>
+        <div className="workshop-list">
           {past.map(u=> (
-            <li key={u.id}><strong>{u.title}</strong> — {u.date} {u.pdfUrl && (<a href={u.pdfUrl} style={{marginLeft:8}} target="_blank" rel="noreferrer">資料</a>)}</li>
+            <article className="workshop-item" key={u.id}>
+              <div>
+                <strong>{u.title}</strong>
+                <span>{u.date} 開催</span>
+              </div>
+              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                {u.pdfUrl && <a className="button btn-blue" href={u.pdfUrl} target="_blank" rel="noreferrer">資料を開く</a>}
+                <button type="button" className="button danger" onClick={() => removeWorkshop(u.id)}>削除</button>
+              </div>
+            </article>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   )

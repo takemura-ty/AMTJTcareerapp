@@ -149,9 +149,12 @@ export default function StudentIndex(){
                   )}
                 </div>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:12,gap:10}}>
-                  <div style={{fontSize:14,color:'#666'}}><strong>{current.title}</strong> — {current.date}</div>
+                  <div className="session-summary">
+                    <strong className="session-title">{current.title}</strong>
+                    <span className="session-date">{current.date} 開催</span>
+                  </div>
                   <div>
-                    <Link href="/student/workshops" className="button btn-blue">詳しくはこちら</Link>
+                    <Link href="/student/workshops" className="button btn-blue">詳しくはコチラ</Link>
                   </div>
                 </div>
                 <div className="carousel-dots" style={{marginTop:12}}>

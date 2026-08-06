@@ -246,10 +246,13 @@ export default function StaffIndex(){
                   )}
                 </div>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:12,gap:10}}>
-                  <div style={{fontSize:14,color:'#666'}}><strong>{currentSession.title}</strong> — {currentSession.date}</div>
+                  <div className="session-summary">
+                    <strong className="session-title">{currentSession.title}</strong>
+                    <span className="session-date">{currentSession.date} 開催</span>
+                  </div>
                   <div style={{display:'grid',gap:14,width:'100%',maxWidth:760}}>
                     <div>
-                      <Link href="/staff/workshops" className="button btn-blue">アップロード＆詳細はこちら</Link>
+                      <Link href="/staff/workshops" className="button btn-blue">詳細はコチラ</Link>
                     </div>
                     <form onSubmit={onSessionSubmit} style={{display:'grid',gap:12,textAlign:'left'}}>
                       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:12}}>
