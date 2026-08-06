@@ -11,6 +11,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       <div className="career-side-mark-track">
         <span>TOYO CAREER CENTER</span>
         <span>TOYO CAREER CENTER</span>
+        <span>TOYO CAREER CENTER</span>
+        <span>TOYO CAREER CENTER</span>
+        <span>TOYO CAREER CENTER</span>
+        <span>TOYO CAREER CENTER</span>
       </div>
     </aside>
     <Component {...pageProps} />
