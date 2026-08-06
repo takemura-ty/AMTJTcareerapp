@@ -137,24 +137,26 @@ export default function StudentIndex(){
                   setIdx((currentIdx) => (currentIdx + (distance > 0 ? 1 : sessions.length - 1)) % sessions.length)
                 }}
               >
-                <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
-                  {current.pdfUrl ? (
+                {current.pdfUrl ? (
+                  <a className="workshop-open-link preview-frame" href={current.pdfUrl} target="_blank" rel="noreferrer" aria-label={`${current.title}の資料を開く`} style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
                     isImageAsset(current.pdfUrl) ? (
                       <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                     ) : (
                       <DocumentPreview src={current.pdfUrl} title={current.title} />
                     )
-                  ) : (
+                  </a>
+                ) : (
+                  <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
                     <div style={{padding:24}}><strong>{current.title}</strong></div>
-                  )}
-                </div>
+                  </div>
+                )}
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:12,gap:10}}>
                   <div className="session-summary">
                     <strong className="session-title">{current.title}</strong>
                     <span className="session-date">{current.date} 開催</span>
                   </div>
                   <div>
-                    <Link href="/student/workshops" className="button btn-blue">詳しくはコチラ</Link>
+                    <Link href="/student/workshops" className="button btn-blue">その他勉強会案内はコチラ</Link>
                   </div>
                 </div>
                 <div className="carousel-dots" style={{marginTop:12}}>
