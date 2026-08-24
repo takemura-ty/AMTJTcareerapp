@@ -120,6 +120,11 @@ async function readRequestBody(req: NextApiRequest) {
 
 function getErrorMessage(error: unknown) {
   if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+    const missingColumn = error.message.match(/Could not find the '([^']+)' column of 'reports'/)
+    if (missingColumn) {
+      return `Supabase の reports テーブルに ${missingColumn[1]} 列がありません。SQL Editor で supabase/schema.sql の reports 列追加 SQL を実行してください。`
+    }
+
     return error.message
   }
 
