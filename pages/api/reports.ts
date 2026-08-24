@@ -118,6 +118,14 @@ async function readRequestBody(req: NextApiRequest) {
   return Buffer.concat(chunks)
 }
 
+function getErrorMessage(error: unknown) {
+  if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+    return error.message
+  }
+
+  return '報告書一覧を更新できませんでした。'
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     const reports = await getReports()
@@ -146,6 +154,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.error('Failed to import reports', error)
-    return res.status(400).json({ error: error instanceof Error ? error.message : '報告書一覧を更新できませんでした。' })
+    return res.status(500).json({ error: getErrorMessage(error) })
   }
 }

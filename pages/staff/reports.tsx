@@ -44,15 +44,26 @@ export default function StaffReports(){
         },
         body: file
       })
-      const data = await response.json()
+      const responseText = await response.text()
+      let data: { error?: string; total?: number; inserted?: number; skipped?: number; errors?: string[] } = {}
+      try {
+        data = responseText ? JSON.parse(responseText) : {}
+      } catch {
+        data = {}
+      }
       if (!response.ok) {
-        throw new Error(data?.error || '報告書一覧を更新できませんでした。')
+        throw new Error(data.error || `アップロードに失敗しました（HTTP ${response.status}）。`)
       }
 
       const updatedReports = await fetch('/api/reports').then((result) => result.json())
       setReports(updatedReports)
       form.reset()
-      setUploadResult(data)
+      setUploadResult({
+        total: data.total || 0,
+        inserted: data.inserted || 0,
+        skipped: data.skipped || 0,
+        errors: data.errors || []
+      })
     } catch (error) {
       console.error(error)
       alert(error instanceof Error ? error.message : '報告書一覧を更新できませんでした。')
