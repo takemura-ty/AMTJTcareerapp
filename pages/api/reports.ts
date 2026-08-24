@@ -14,8 +14,13 @@ export const config = {
 
 type SpreadsheetRow = Record<string, unknown>
 
+function normalizeHeader(value: string) {
+  return value.replace(/[\s　]/g, '').replace(/[()（）]/g, '').trim()
+}
+
 function findValue(row: SpreadsheetRow, names: string[]) {
-  const key = Object.keys(row).find((column) => names.includes(column.trim()))
+  const normalizedNames = names.map(normalizeHeader)
+  const key = Object.keys(row).find((column) => normalizedNames.includes(normalizeHeader(column)))
   const value = key ? row[key] : undefined
   return value === undefined || value === null ? '' : value
 }
@@ -43,10 +48,10 @@ function formatDate(value: unknown) {
 
 function parseMajor(value: string): Report['major'] | null {
   const normalized = value.toLowerCase().replace(/\s/g, '')
-  if (['shinkyu', '鍼灸', '鍼灸学科'].includes(normalized)) {
+  if (normalized === 'shinkyu' || normalized.includes('鍼灸')) {
     return 'shinkyu'
   }
-  if (['judo', '柔整', '柔道整復', '柔道整復学科'].includes(normalized)) {
+  if (normalized === 'judo' || normalized.includes('柔整') || normalized.includes('柔道整復')) {
     return 'judo'
   }
   return null
