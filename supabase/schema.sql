@@ -21,6 +21,10 @@ alter table public.reports add column if not exists other_notes text;
 alter table public.reports add column if not exists interview_wish text;
 alter table public.reports add column if not exists advice text;
 
+create unique index if not exists reports_visit_company_date_major_key
+on public.reports (company, date, major)
+where type = 'visit';
+
 create table if not exists public.workshops (
   id uuid primary key default gen_random_uuid(),
   title text not null,

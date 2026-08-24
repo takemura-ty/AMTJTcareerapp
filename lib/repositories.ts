@@ -107,6 +107,70 @@ export async function getReports() {
   return data.map(mapReportRow)
 }
 
+export type ReportImportRow = Omit<Report, 'id' | 'type' | 'updatedAt'>
+
+export type ReportImportResult = {
+  inserted: number
+  skipped: number
+}
+
+export async function importVisitReports(reports: ReportImportRow[]): Promise<ReportImportResult> {
+  const supabase = getSupabaseServerClient()
+  if (!supabase) {
+    throw new Error('Supabase is not configured')
+  }
+
+  const { data: existingReports, error: selectError } = await supabase
+    .from('reports')
+    .select('company, date, major')
+    .eq('type', 'visit')
+
+  if (selectError) {
+    throw selectError
+  }
+
+  const reportKey = (report: Pick<Report, 'company' | 'date' | 'major'>) => `${report.company}\u0000${report.date}\u0000${report.major}`
+  const existingKeys = new Set((existingReports || []).map(reportKey))
+  const newReports = reports.filter((report) => {
+    const key = reportKey(report)
+    if (existingKeys.has(key)) {
+      return false
+    }
+    existingKeys.add(key)
+    return true
+  })
+
+  if (!newReports.length) {
+    return { inserted: 0, skipped: reports.length }
+  }
+
+  const updatedAt = new Date().toISOString()
+  const rows = newReports.map((report) => ({
+    id: crypto.randomUUID(),
+    company: report.company,
+    sub_company: null,
+    region: report.region,
+    city: report.city || null,
+    type: 'visit',
+    date: report.date,
+    major: report.major,
+    updated_at: updatedAt,
+    supervisor_impression: report.supervisorImpression || null,
+    staff_impression: report.staffImpression || null,
+    clinic_impression: report.clinicImpression || null,
+    other_notes: report.otherNotes || null,
+    interview_wish: report.interviewWish || null,
+    advice: report.advice || null
+  }))
+
+  const { error: insertError } = await supabase.from('reports').insert(rows)
+  if (insertError) {
+    throw insertError
+  }
+
+  return { inserted: rows.length, skipped: reports.length - rows.length }
+}
+
 export async function getWorkshops() {
   if (!isSupabaseConfigured()) {
     return mockWorkshops

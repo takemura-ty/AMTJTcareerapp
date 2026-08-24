@@ -14,7 +14,7 @@ Open http://localhost:3000 and use the mock login to enter as `学生` or `職�
 Implemented:
 - Mock login (client-side)
 - 学生ページ: 見学・面接報告書一覧, 勉強会案内, 報告書提出リンク
-- 職員ページ: ファイルアップロード（モック）と報告書一覧
+- 職員ページ: 報告書一覧の Excel/CSV 一括更新と報告書一覧
 - API: `/api/reports`, `/api/workshops` returning Supabase data when configured, otherwise mock data
 
 Supabase Setup
@@ -40,6 +40,14 @@ File Uploads
 - PDF and image uploads and their metadata are stored in Supabase.
 - `career-files` Storage bucket is created automatically on the first upload.
 - Staff-side uploads for `JOB HUNTING TIPS` and `INFORMATION SESSION` require `SUPABASE_SERVICE_ROLE_KEY` on the server side. If this is missing, reading works but saving fails.
+
+Report List Imports
+-------------------
+
+- Staff can upload `.xlsx` or `.xls` files from the visit report page. New rows are added as visit reports; existing rows with the same company, date, and major are skipped.
+- Required header columns are `学科名`, `見学先名`, `所在地`, and `見学日`. `学科名` accepts values containing `鍼灸` or `柔道整復`.
+- Optional columns are `市町村`, `院長先生や見学担当者の方の印象`, `スタッフの印象`, `院全体の印象`, `その他（印象に残ったことなど）`, `面接希望（３年生のみ）（１.２年生は希望者のみ）`, and `今後見学を希望する後輩へのアドバイス`.
+- The import requires `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`.
 
 Staff Login
 -----------
