@@ -12,37 +12,51 @@ type ReportBrowserProps = {
 export default function ReportBrowser({ reports, reportType, detailPath }: ReportBrowserProps) {
   const [selectedRegion, setSelectedRegion] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [rankingSearchTerm, setRankingSearchTerm] = useState('')
   const router = useRouter()
 
   function openClinicDetail(clinicKey: string) {
     router.push({ pathname: detailPath, query: { type: reportType, clinic: clinicKey } })
   }
 
-  const filteredReports = useMemo(() => {
-    const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase('ja-JP')
-    const nextReports = reports
+  const reportsForSelectedRegion = useMemo(() => (
+    reports
       .filter(report => (reportType ? report.type === reportType : true))
       .filter(report => (selectedRegion ? report.region === selectedRegion : true))
-      .filter(report => (
-        !normalizedSearchTerm
-        || report.company.toLocaleLowerCase('ja-JP').includes(normalizedSearchTerm)
-        || report.city?.toLocaleLowerCase('ja-JP').includes(normalizedSearchTerm)
-      ))
+      .sort((left, right) => right.date.localeCompare(left.date))
+  ), [reportType, reports, selectedRegion])
 
-    return nextReports.sort((left, right) => right.date.localeCompare(left.date))
-  }, [reportType, reports, searchTerm, selectedRegion])
+  function filterBySearchTerm(sourceReports: Report[], value: string) {
+    const normalizedSearchTerm = value.trim().toLocaleLowerCase('ja-JP')
+    return sourceReports.filter(report => (
+      !normalizedSearchTerm
+      || report.company.toLocaleLowerCase('ja-JP').includes(normalizedSearchTerm)
+      || report.city?.toLocaleLowerCase('ja-JP').includes(normalizedSearchTerm)
+    ))
+  }
+
+  const filteredReports = useMemo(
+    () => filterBySearchTerm(reportsForSelectedRegion, searchTerm),
+    [reportsForSelectedRegion, searchTerm]
+  )
+
+  const rankingReports = useMemo(
+    () => filterBySearchTerm(reportsForSelectedRegion, rankingSearchTerm),
+    [rankingSearchTerm, reportsForSelectedRegion]
+  )
 
   const clinicGroups = useMemo(() => groupByClinic(filteredReports), [filteredReports])
+  const rankingClinicGroups = useMemo(() => groupByClinic(rankingReports), [rankingReports])
 
   const reportRanking = useMemo(() => (
-    [...clinicGroups]
+    [...rankingClinicGroups]
       .sort((left, right) => {
         const reportCountCompare = right.reports.length - left.reports.length
         if (reportCountCompare !== 0) return reportCountCompare
         return left.company.localeCompare(right.company, 'ja')
       })
       .slice(0, 3)
-  ), [clinicGroups])
+  ), [rankingClinicGroups])
 
   const groupedByPrefecture = useMemo(() => {
     const byPrefecture = new Map<string, ClinicGroup[]>()
@@ -276,7 +290,10 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
             </ol>
           </section>
         ) : null}
-        <div className="toolbar">
+        <form className="toolbar" onSubmit={event => {
+          event.preventDefault()
+          setRankingSearchTerm(searchTerm)
+        }}>
           <select className="region-select" value={selectedRegion} onChange={event => setSelectedRegion(event.target.value)}>
             <option value="">すべての都道府県</option>
             {PREFECTURES.map(prefecture => (
@@ -291,7 +308,7 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
             placeholder="治療院名・市町村名で検索"
             aria-label="治療院名・市町村名で検索"
           />
-        </div>
+        </form>
 
         <div className="layout">
           <section className="clinic-list">

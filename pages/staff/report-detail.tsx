@@ -4,6 +4,7 @@ import Link from 'next/link'
 import type { Report } from '../../lib/data'
 import { useRequireAuth } from '../../lib/auth'
 import ReportDetailView from '../../components/ReportDetailView'
+import { getClinicKey } from '../../lib/reportGroups'
 
 export default function StaffReportDetail() {
   const [reports, setReports] = useState<Report[]>([])
@@ -15,6 +16,34 @@ export default function StaffReportDetail() {
   useEffect(() => {
     fetch('/api/reports').then(response => response.json()).then(setReports)
   }, [])
+
+  async function updateReports(ids: string[], update: Record<string, string>) {
+    const response = await fetch('/api/reports', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids, update })
+    })
+    const data = await response.json()
+    if (!response.ok) {
+      throw new Error(data.error || '報告書を更新できませんでした。')
+    }
+
+    const updatedReports = await fetch('/api/reports').then(result => result.json())
+    setReports(updatedReports)
+    if (update.company !== undefined || update.region !== undefined || update.city !== undefined) {
+      router.replace({
+        pathname: '/staff/report-detail',
+        query: {
+          type: reportType,
+          clinic: getClinicKey({
+            company: update.company || reports.find(report => report.id === ids[0])?.company || '',
+            region: update.region || reports.find(report => report.id === ids[0])?.region || '',
+            city: update.city === undefined ? reports.find(report => report.id === ids[0])?.city : update.city
+          })
+        }
+      })
+    }
+  }
 
   const reportType = Array.isArray(type) ? type[0] : type
   const clinicKey = Array.isArray(clinic) ? clinic[0] : clinic
@@ -40,7 +69,7 @@ export default function StaffReportDetail() {
             <p style={{ color: '#8b8b8b' }}>治療院ごとの報告書詳細を確認できます</p>
           </div>
 
-          <ReportDetailView reports={reports} reportType={reportType} clinicKey={clinicKey} backHref={backHref} />
+          <ReportDetailView reports={reports} reportType={reportType} clinicKey={clinicKey} backHref={backHref} onUpdate={updateReports} />
         </div>
       </div>
     </div>

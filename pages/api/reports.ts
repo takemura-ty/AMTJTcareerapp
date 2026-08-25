@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import * as XLSX from 'xlsx'
 import { Report } from '../../lib/data'
-import { getReports, importVisitReports, ReportImportRow } from '../../lib/repositories'
+import { getReports, importVisitReports, ReportImportRow, ReportUpdate, updateReports } from '../../lib/repositories'
 import { normalizePrefecture } from '../../lib/reportGroups'
 import { isSupabaseConfigured, isSupabaseWriteConfigured } from '../../lib/supabase'
 
@@ -132,10 +132,69 @@ function getErrorMessage(error: unknown) {
   return '報告書一覧を更新できませんでした。'
 }
 
+function parseReportUpdate(value: unknown): ReportUpdate {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('更新内容を確認してください。')
+  }
+
+  const source = value as Record<string, unknown>
+  const textFields = [
+    'company', 'region', 'city', 'date', 'supervisorImpression', 'staffImpression',
+    'clinicImpression', 'otherNotes', 'interviewWish', 'advice'
+  ] as const
+  const update: Record<string, string> = {}
+
+  for (const field of textFields) {
+    if (field in source) {
+      if (typeof source[field] !== 'string') {
+        throw new Error('更新内容を確認してください。')
+      }
+      update[field] = source[field].trim()
+    }
+  }
+
+  if ('major' in source) {
+    if (source.major !== 'shinkyu' && source.major !== 'judo') {
+      throw new Error('学科を確認してください。')
+    }
+    update.major = source.major
+  }
+
+  if ('company' in update && !update.company) {
+    throw new Error('治療院名を入力してください。')
+  }
+  if ('region' in update && !update.region) {
+    throw new Error('都道府県を入力してください。')
+  }
+  if ('date' in update && !/^\d{4}-\d{2}-\d{2}$/.test(update.date)) {
+    throw new Error('日付を確認してください。')
+  }
+
+  return update as ReportUpdate
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     const reports = await getReports()
     return res.status(200).json(reports)
+  }
+
+  if (req.method === 'PATCH') {
+    if (!isSupabaseConfigured() || !isSupabaseWriteConfigured()) {
+      return res.status(503).json({ error: '報告書の編集には Supabase の接続設定と SUPABASE_SERVICE_ROLE_KEY が必要です。' })
+    }
+
+    try {
+      const body = JSON.parse((await readRequestBody(req)).toString('utf8')) as { ids?: unknown, update?: unknown }
+      if (!Array.isArray(body.ids) || !body.ids.length || !body.ids.every(id => typeof id === 'string')) {
+        throw new Error('更新対象の報告書を確認してください。')
+      }
+
+      const reports = await updateReports(body.ids, parseReportUpdate(body.update))
+      return res.status(200).json(reports)
+    } catch (error) {
+      return res.status(400).json({ error: getErrorMessage(error) })
+    }
   }
 
   if (req.method !== 'POST') {

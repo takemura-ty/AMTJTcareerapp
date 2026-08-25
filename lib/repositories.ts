@@ -115,6 +115,86 @@ export type ReportImportResult = {
   skipped: number
 }
 
+export type ReportUpdate = Partial<Pick<Report,
+  'company' | 'region' | 'city' | 'date' | 'major' |
+  'supervisorImpression' | 'staffImpression' | 'clinicImpression' |
+  'otherNotes' | 'interviewWish' | 'advice'
+>>
+
+export async function updateReports(ids: string[], update: ReportUpdate) {
+  const supabase = getSupabaseServerClient()
+  if (!supabase) {
+    throw new Error('Supabase is not configured')
+  }
+
+  let updateIds = ids
+  if (update.company !== undefined) {
+    const { data: sourceReports, error: sourceError } = await supabase
+      .from('reports')
+      .select('id, type, date, major')
+      .in('id', ids)
+    if (sourceError) {
+      throw sourceError
+    }
+
+    const { data: destinationReports, error: destinationError } = await supabase
+      .from('reports')
+      .select('id, date, major')
+      .eq('company', update.company)
+      .eq('type', 'visit')
+    if (destinationError) {
+      throw destinationError
+    }
+
+    const destinationKeys = new Set(
+      (destinationReports || [])
+        .filter(report => !ids.includes(report.id))
+        .map(report => `${report.date}\u0000${report.major}`)
+    )
+    const duplicateIds = (sourceReports || [])
+      .filter(report => report.type === 'visit' && destinationKeys.has(`${report.date}\u0000${report.major}`))
+      .map(report => report.id)
+
+    if (duplicateIds.length) {
+      const { error: deleteError } = await supabase.from('reports').delete().in('id', duplicateIds)
+      if (deleteError) {
+        throw deleteError
+      }
+      updateIds = ids.filter(id => !duplicateIds.includes(id))
+    }
+  }
+
+  const rows = {
+    ...(update.company !== undefined ? { company: update.company } : {}),
+    ...(update.region !== undefined ? { region: normalizePrefecture(update.region) } : {}),
+    ...(update.city !== undefined ? { city: update.city || null } : {}),
+    ...(update.date !== undefined ? { date: update.date } : {}),
+    ...(update.major !== undefined ? { major: update.major } : {}),
+    ...(update.supervisorImpression !== undefined ? { supervisor_impression: update.supervisorImpression || null } : {}),
+    ...(update.staffImpression !== undefined ? { staff_impression: update.staffImpression || null } : {}),
+    ...(update.clinicImpression !== undefined ? { clinic_impression: update.clinicImpression || null } : {}),
+    ...(update.otherNotes !== undefined ? { other_notes: update.otherNotes || null } : {}),
+    ...(update.interviewWish !== undefined ? { interview_wish: update.interviewWish || null } : {}),
+    ...(update.advice !== undefined ? { advice: update.advice || null } : {})
+  }
+
+  if (!updateIds.length || !Object.keys(rows).length) {
+    return []
+  }
+
+  const { data, error } = await supabase
+    .from('reports')
+    .update(rows)
+    .in('id', updateIds)
+    .select('id, company, sub_company, region, city, type, date, major, updated_at, supervisor_impression, staff_impression, clinic_impression, other_notes, interview_wish, advice')
+
+  if (error) {
+    throw error
+  }
+
+  return (data || []).map(mapReportRow)
+}
+
 export async function importVisitReports(reports: ReportImportRow[]): Promise<ReportImportResult> {
   const supabase = getSupabaseServerClient()
   if (!supabase) {

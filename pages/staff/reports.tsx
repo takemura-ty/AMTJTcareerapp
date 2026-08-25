@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { Report } from '../../lib/data'
@@ -73,6 +73,21 @@ export default function StaffReports(){
   }
 
   const reportType = Array.isArray(type) ? type[0] : type
+  const latestImport = useMemo(() => {
+    const visitReports = reports.filter(report => report.type === 'visit' && report.updatedAt)
+    const uploadedAt = visitReports.map(report => report.updatedAt as string).sort((left, right) => right.localeCompare(left))[0]
+    if (!uploadedAt) return null
+
+    const latestReport = visitReports
+      .filter(report => report.updatedAt === uploadedAt)
+      .sort((left, right) => {
+        const dateCompare = right.date.localeCompare(left.date)
+        if (dateCompare !== 0) return dateCompare
+        return left.company.localeCompare(right.company, 'ja')
+      })[0]
+
+    return latestReport ? { uploadedAt, report: latestReport } : null
+  }, [reports])
   const isInterviewPage = reportType === 'interview'
   const title = isInterviewPage ? '面接報告書' : reportType === 'visit' ? '見学報告書' : '見学・面接報告書一覧'
   const introText = isInterviewPage
@@ -112,6 +127,12 @@ export default function StaffReports(){
               全{uploadResult.total}件 / 新規登録：{uploadResult.inserted}件 / 重複スキップ：{uploadResult.skipped}件 / エラー：{uploadResult.errors.length}件
               {uploadResult.errors.map((message) => <div key={message} style={{color:'#a33',marginTop:4}}>{message}</div>)}
             </div>}
+          </div>}
+
+          {reportType === 'visit' && latestImport && <div style={{maxWidth:960,margin:'0 auto 18px',padding:'14px 20px',borderTop:'1px solid #dce5eb',color:'#425563',fontSize:14,lineHeight:1.7}}>
+            <strong>最新アップロード状況</strong><br />
+            アップロード日: {latestImport.uploadedAt}<br />
+            最終データ: 見学日 {latestImport.report.date} / {latestImport.report.major === 'shinkyu' ? '鍼灸師学科' : '柔道整復師学科'} / {latestImport.report.company}
           </div>}
 
           <ReportBrowser reports={reports} reportType={reportType} detailPath="/staff/report-detail" />
