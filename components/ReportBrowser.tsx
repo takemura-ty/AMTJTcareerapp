@@ -11,6 +11,7 @@ type ReportBrowserProps = {
 
 export default function ReportBrowser({ reports, reportType, detailPath }: ReportBrowserProps) {
   const [selectedRegion, setSelectedRegion] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
   const router = useRouter()
 
   function openClinicDetail(clinicKey: string) {
@@ -18,12 +19,18 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
   }
 
   const filteredReports = useMemo(() => {
+    const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase('ja-JP')
     const nextReports = reports
       .filter(report => (reportType ? report.type === reportType : true))
       .filter(report => (selectedRegion ? report.region === selectedRegion : true))
+      .filter(report => (
+        !normalizedSearchTerm
+        || report.company.toLocaleLowerCase('ja-JP').includes(normalizedSearchTerm)
+        || report.city?.toLocaleLowerCase('ja-JP').includes(normalizedSearchTerm)
+      ))
 
     return nextReports.sort((left, right) => right.date.localeCompare(left.date))
-  }, [reportType, reports, selectedRegion])
+  }, [reportType, reports, searchTerm, selectedRegion])
 
   const clinicGroups = useMemo(() => groupByClinic(filteredReports), [filteredReports])
 
@@ -73,11 +80,20 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
         }
 
         .region-select {
-          max-width: 260px;
+          width: min(260px, 100%);
           padding: 10px 12px;
           border-radius: 10px;
           border: 1px solid #d7e0e7;
           background: #fff;
+        }
+
+        .search-input {
+          width: min(320px, 100%);
+          padding: 10px 12px;
+          border-radius: 10px;
+          border: 1px solid #d7e0e7;
+          background: #fff;
+          box-sizing: border-box;
         }
 
         .layout {
@@ -110,12 +126,22 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
         }
 
         .ranking-item {
+          width: 100%;
           display: grid;
+          text-align: left;
           gap: 4px;
           padding: 10px 12px;
           background: #fff;
           border: 1px solid #f0dfba;
           border-radius: 8px;
+          color: inherit;
+          cursor: pointer;
+          font: inherit;
+        }
+
+        .ranking-item:hover {
+          border-color: #c68a1b;
+          background: #fffdf8;
         }
 
         .ranking-rank {
@@ -213,6 +239,16 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
         }
 
         @media (max-width: 640px) {
+          .toolbar {
+            align-items: stretch;
+            flex-direction: column;
+          }
+
+          .region-select,
+          .search-input {
+            width: 100%;
+          }
+
           .ranking-list {
             grid-template-columns: 1fr;
           }
@@ -229,10 +265,12 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
             <h3 className="section-title">報告件数ランキング</h3>
             <ol className="ranking-list">
               {reportRanking.map((group, index) => (
-                <li key={group.key} className="ranking-item">
-                  <span className="ranking-rank">{index + 1}位</span>
-                  <strong>{group.company}</strong>
-                  <span className="meta">{formatPrefecture(group.region)} {group.city || '市区町村未設定'} / {group.reports.length}件</span>
+                <li key={group.key}>
+                  <button type="button" className="ranking-item" onClick={() => openClinicDetail(group.key)}>
+                    <span className="ranking-rank">{index + 1}位</span>
+                    <strong>{group.company}</strong>
+                    <span className="meta">{formatPrefecture(group.region)} {group.city || '市区町村未設定'} / {group.reports.length}件</span>
+                  </button>
                 </li>
               ))}
             </ol>
@@ -245,6 +283,14 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
               <option key={prefecture} value={prefecture}>{formatPrefecture(prefecture)}</option>
             ))}
           </select>
+          <input
+            className="search-input"
+            type="search"
+            value={searchTerm}
+            onChange={event => setSearchTerm(event.target.value)}
+            placeholder="治療院名・市町村名で検索"
+            aria-label="治療院名・市町村名で検索"
+          />
         </div>
 
         <div className="layout">
@@ -271,7 +317,13 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
                         </svg>
                         {formatPrefecture(prefecture)}
                       </h4>
-                      {[...groupedByCity.entries()].sort((left, right) => left[0].localeCompare(right[0], 'ja')).map(([city, cityGroups]) => (
+                      {[...groupedByCity.entries()].sort((left, right) => {
+                        const leftReportCount = left[1].reduce((count, group) => count + group.reports.length, 0)
+                        const rightReportCount = right[1].reduce((count, group) => count + group.reports.length, 0)
+                        const reportCountCompare = rightReportCount - leftReportCount
+                        if (reportCountCompare !== 0) return reportCountCompare
+                        return left[0].localeCompare(right[0], 'ja')
+                      }).map(([city, cityGroups]) => (
                         <div key={city}>
                           <div className="city-name">{city}</div>
                           <div className="clinic-grid">
