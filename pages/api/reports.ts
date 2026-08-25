@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import * as XLSX from 'xlsx'
 import { Report } from '../../lib/data'
 import { getReports, importVisitReports, ReportImportRow } from '../../lib/repositories'
+import { normalizePrefecture } from '../../lib/reportGroups'
 import { isSupabaseConfigured, isSupabaseWriteConfigured } from '../../lib/supabase'
 
 const MAX_UPLOAD_BYTES = 4 * 1024 * 1024
@@ -74,7 +75,7 @@ function parseRows(buffer: Buffer) {
 
   rows.forEach((row, index) => {
     const company = String(findValue(row, ['見学先名', '治療院名', '院名', '会社名'])).trim()
-    const region = String(findValue(row, ['所在地', '都道府県', '地域'])).trim()
+    const region = normalizePrefecture(String(findValue(row, ['所在地', '都道府県', '地域'])))
     const date = formatDate(findValue(row, ['見学日', '日付']))
     const major = parseMajor(String(findValue(row, ['学科名', '学科', '識別ID', '専攻'])).trim())
 

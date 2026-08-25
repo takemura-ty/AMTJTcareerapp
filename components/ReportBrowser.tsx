@@ -27,6 +27,16 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
 
   const clinicGroups = useMemo(() => groupByClinic(filteredReports), [filteredReports])
 
+  const reportRanking = useMemo(() => (
+    [...clinicGroups]
+      .sort((left, right) => {
+        const reportCountCompare = right.reports.length - left.reports.length
+        if (reportCountCompare !== 0) return reportCountCompare
+        return left.company.localeCompare(right.company, 'ja')
+      })
+      .slice(0, 3)
+  ), [clinicGroups])
+
   const groupedByPrefecture = useMemo(() => {
     const byPrefecture = new Map<string, ClinicGroup[]>()
 
@@ -80,6 +90,38 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
           border-radius: 16px;
           padding: 18px;
           box-shadow: 0 8px 24px rgba(7, 22, 28, 0.05);
+        }
+
+        .ranking {
+          background: #fff8e8;
+          border: 1px solid #efd7a5;
+          border-radius: 8px;
+          padding: 16px 18px;
+          margin-bottom: 20px;
+        }
+
+        .ranking-list {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+
+        .ranking-item {
+          display: grid;
+          gap: 4px;
+          padding: 10px 12px;
+          background: #fff;
+          border: 1px solid #f0dfba;
+          border-radius: 8px;
+        }
+
+        .ranking-rank {
+          color: #9a6500;
+          font-weight: 700;
+          font-size: 13px;
         }
 
         .section-title {
@@ -171,6 +213,10 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
         }
 
         @media (max-width: 640px) {
+          .ranking-list {
+            grid-template-columns: 1fr;
+          }
+
           .clinic-grid {
             grid-template-columns: 1fr;
           }
@@ -178,6 +224,20 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
       `}</style>
 
       <div className="report-browser">
+        {reportRanking.length > 0 ? (
+          <section className="ranking" aria-label="報告件数ランキング">
+            <h3 className="section-title">報告件数ランキング</h3>
+            <ol className="ranking-list">
+              {reportRanking.map((group, index) => (
+                <li key={group.key} className="ranking-item">
+                  <span className="ranking-rank">{index + 1}位</span>
+                  <strong>{group.company}</strong>
+                  <span className="meta">{formatPrefecture(group.region)} {group.city || '市区町村未設定'} / {group.reports.length}件</span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ) : null}
         <div className="toolbar">
           <select className="region-select" value={selectedRegion} onChange={event => setSelectedRegion(event.target.value)}>
             <option value="">すべての都道府県</option>

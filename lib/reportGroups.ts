@@ -11,13 +11,20 @@ export const PREFECTURES = [
   '福岡', '佐賀', '長崎', '熊本', '大分', '宮崎', '鹿児島', '沖縄'
 ]
 
-export const CITY_SPLIT_PREFECTURES = new Set(['大阪', '兵庫'])
+export const CITY_SPLIT_PREFECTURES = new Set(PREFECTURES)
+
+export function normalizePrefecture(name: string) {
+  const compact = name.trim().replace(/[\s　]/g, '')
+  if (compact === '北海道') return compact
+  return compact.replace(/(都|道|府|県)+$/g, '')
+}
 
 export function formatPrefecture(name: string) {
-  if (name === '北海道') return name
-  if (name === '東京') return '東京都'
-  if (name === '大阪' || name === '京都') return `${name}府`
-  return `${name}県`
+  const prefecture = normalizePrefecture(name)
+  if (prefecture === '北海道') return prefecture
+  if (prefecture === '東京') return '東京都'
+  if (prefecture === '大阪' || prefecture === '京都') return `${prefecture}府`
+  return `${prefecture}県`
 }
 
 export function formatMajor(major: Report['major']) {
@@ -35,16 +42,17 @@ export function getClinicUpdatedAt(reports: Report[]) {
 }
 
 export function getClinicKey(report: Pick<Report, 'region' | 'city' | 'company'>) {
-  return `${report.region}::${report.city || ''}::${report.company}`
+  return `${normalizePrefecture(report.region)}::${report.city || ''}::${report.company}`
 }
 
 export function groupByClinic(reports: Report[]) {
   const groups = new Map<string, Report[]>()
 
   for (const report of sortByDateDesc(reports)) {
-    const key = getClinicKey(report)
+    const normalizedReport = { ...report, region: normalizePrefecture(report.region) }
+    const key = getClinicKey(normalizedReport)
     const current = groups.get(key) || []
-    current.push(report)
+    current.push(normalizedReport)
     groups.set(key, current)
   }
 

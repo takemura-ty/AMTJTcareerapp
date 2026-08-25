@@ -1,5 +1,6 @@
-import { Report, reports as mockReports, Workshop, workshops as mockWorkshops } from './data'
+import { Report, Workshop, workshops as mockWorkshops } from './data'
 import { defaultJobHuntingTips, JobHuntingTip, JobHuntingTipKey, mergeJobHuntingTips } from './jobHuntingTips'
+import { normalizePrefecture } from './reportGroups'
 import { getSupabaseServerClient, isSupabaseConfigured } from './supabase'
 
 type ReportRow = {
@@ -48,7 +49,7 @@ function mapReportRow(row: ReportRow): Report {
     id: row.id,
     company: row.company,
     subCompany: row.sub_company || undefined,
-    region: row.region,
+    region: normalizePrefecture(row.region),
     city: row.city || undefined,
     type: row.type,
     date: row.date,
@@ -86,12 +87,12 @@ function mapJobHuntingTipRow(row: JobHuntingTipRow): JobHuntingTip {
 
 export async function getReports() {
   if (!isSupabaseConfigured()) {
-    return mockReports
+    return []
   }
 
   const supabase = getSupabaseServerClient()
   if (!supabase) {
-    return mockReports
+    return []
   }
 
   const { data, error } = await supabase
@@ -101,7 +102,7 @@ export async function getReports() {
 
   if (error || !data) {
     console.error('Failed to fetch reports from Supabase:', error)
-    return mockReports
+    return []
   }
 
   return data.map(mapReportRow)
