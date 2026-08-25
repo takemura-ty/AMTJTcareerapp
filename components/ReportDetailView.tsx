@@ -31,6 +31,10 @@ function getDateLabel(type: Report['type']) {
   return type === 'interview' ? '面接日' : '見学日'
 }
 
+function formatUpdatedDate(value?: string) {
+  return value ? value.slice(0, 10) : '未設定'
+}
+
 export default function ReportDetailView({ reports, reportType, clinicKey, backHref, onUpdate }: ReportDetailViewProps) {
   const filteredReports = reports.filter(report => (reportType ? report.type === reportType : true))
   const selectedClinic = groupByClinic(filteredReports).find(group => group.key === clinicKey) || null
@@ -328,7 +332,7 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
                         </span>
                       </span>
                       <br />
-                      最終更新日: {selectedClinic.updatedAt}
+                      最終更新日: {formatUpdatedDate(selectedClinic.updatedAt)}
                     </div>
                   </>
                 )}

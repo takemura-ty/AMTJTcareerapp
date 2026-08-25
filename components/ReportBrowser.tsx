@@ -9,6 +9,10 @@ type ReportBrowserProps = {
   detailPath: string
 }
 
+function formatUpdatedDate(value?: string) {
+  return value ? value.slice(0, 10) : '未設定'
+}
+
 export default function ReportBrowser({ reports, reportType, detailPath }: ReportBrowserProps) {
   const [selectedRegion, setSelectedRegion] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -268,7 +272,7 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
           }
 
           .clinic-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
         }
       `}</style>
@@ -352,7 +356,7 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
                                 onClick={() => openClinicDetail(group.key)}
                               >
                                 <span className="clinic-name">{group.company}</span>
-                                <span className="meta">最終更新日: {group.updatedAt}</span>
+                                <span className="meta">最終更新日: {formatUpdatedDate(group.updatedAt)}</span>
                                 <span className="meta">報告書: {group.reports.length}件</span>
                               </button>
                             ))}
@@ -381,7 +385,7 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
                         >
                           <span className="clinic-name">{group.company}</span>
                           {group.city ? <span className="meta">{group.city}</span> : null}
-                          <span className="meta">最終更新日: {group.updatedAt}</span>
+                          <span className="meta">最終更新日: {formatUpdatedDate(group.updatedAt)}</span>
                           <span className="meta">報告書: {group.reports.length}件</span>
                         </button>
                       ))}
