@@ -26,7 +26,7 @@ export default function Reports(){
       <div className="student-top">
         <div className="header">
           <h2>{title}</h2>
-          <Link href="/student" className="button logout">戻る</Link>
+          <Link href="/student" className="button logout">ホームに戻る</Link>
         </div>
       </div>
 
