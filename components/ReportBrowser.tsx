@@ -235,6 +235,9 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
           display: block;
           font-weight: 700;
           margin-bottom: 6px;
+          line-break: strict;
+          overflow-wrap: break-word;
+          word-break: normal;
         }
 
         .meta {
@@ -253,6 +256,10 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
         @media (max-width: 900px) {
           .clinic-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .updated-date {
+            display: block;
           }
         }
 
@@ -356,7 +363,7 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
                                 onClick={() => openClinicDetail(group.key)}
                               >
                                 <span className="clinic-name">{group.company}</span>
-                                <span className="meta">最終更新日: {formatUpdatedDate(group.updatedAt)}</span>
+                                <span className="meta">最終更新日: <span className="updated-date">{formatUpdatedDate(group.updatedAt)}</span></span>
                                 <span className="meta">報告書: {group.reports.length}件</span>
                               </button>
                             ))}
@@ -385,7 +392,7 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
                         >
                           <span className="clinic-name">{group.company}</span>
                           {group.city ? <span className="meta">{group.city}</span> : null}
-                          <span className="meta">最終更新日: {formatUpdatedDate(group.updatedAt)}</span>
+                          <span className="meta">最終更新日: <span className="updated-date">{formatUpdatedDate(group.updatedAt)}</span></span>
                           <span className="meta">報告書: {group.reports.length}件</span>
                         </button>
                       ))}
