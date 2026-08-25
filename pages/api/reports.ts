@@ -21,7 +21,13 @@ function normalizeHeader(value: string) {
 
 function findValue(row: SpreadsheetRow, names: string[]) {
   const normalizedNames = names.map(normalizeHeader)
-  const key = Object.keys(row).find((column) => normalizedNames.includes(normalizeHeader(column)))
+  const columns = Object.keys(row).map(column => ({ column, normalized: normalizeHeader(column) }))
+  const key = normalizedNames
+    .map(name => columns.find(column => column.normalized === name)?.column)
+    .find(Boolean)
+    || normalizedNames
+      .map(name => columns.find(column => column.normalized.includes(name) || name.includes(column.normalized))?.column)
+      .find(Boolean)
   const value = key ? row[key] : undefined
   return value === undefined || value === null ? '' : value
 }
@@ -80,7 +86,13 @@ function parseRows(buffer: Buffer, type: Report['type']) {
     const major = parseMajor(String(findValue(row, ['学科名', '学科', '識別ID', '専攻'])).trim())
 
     if (!company || !region || !date || !major) {
-      errors.push(`${index + 2} 行目: 施設名、日付、所在地、学科名を確認してください。`)
+      const missingFields = [
+        !company ? '施設名' : '',
+        !date ? '日付' : '',
+        !region ? '所在地' : '',
+        !major ? '学科名' : ''
+      ].filter(Boolean)
+      errors.push(`${index + 2} 行目: ${missingFields.join('、')}を確認してください。`)
       return
     }
 
