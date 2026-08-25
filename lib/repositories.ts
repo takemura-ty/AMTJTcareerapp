@@ -119,7 +119,18 @@ export async function getReports() {
     return []
   }
 
-  return data.map(mapReportRow)
+  const { data: interviewFields, error: interviewFieldsError } = await supabase
+    .from('reports')
+    .select('id, interviewer_count, interviewer, exam_contents, questions_asked, written_practical_exam, result, result_notification')
+    .eq('type', 'interview')
+
+  if (interviewFieldsError) {
+    console.warn('Failed to fetch interview-specific report fields:', interviewFieldsError)
+    return data.map(mapReportRow)
+  }
+
+  const interviewFieldsById = new Map((interviewFields || []).map(report => [report.id, report]))
+  return data.map(report => mapReportRow({ ...report, ...interviewFieldsById.get(report.id) }))
 }
 
 export type ReportImportRow = Omit<Report, 'id' | 'type' | 'updatedAt'>
