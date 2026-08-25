@@ -218,6 +218,22 @@ export async function updateReports(ids: string[], update: ReportUpdate) {
   return (data || []).map(mapReportRow)
 }
 
+export async function deleteReport(id: string) {
+  const supabase = getSupabaseServerClient()
+  if (!supabase) {
+    throw new Error('Supabase is not configured')
+  }
+
+  const { error } = await supabase
+    .from('reports')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    throw error
+  }
+}
+
 export async function importReports(reports: ReportImportRow[], type: Report['type']): Promise<ReportImportResult> {
   const supabase = getSupabaseServerClient()
   if (!supabase) {

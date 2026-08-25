@@ -16,6 +16,7 @@ type ReportDetailViewProps = {
   clinicKey?: string
   backHref: string
   onUpdate?: (ids: string[], update: ReportEdit) => Promise<void>
+  onDelete?: (id: string) => Promise<void>
 }
 
 type ReportField = Exclude<keyof ReportEdit, 'company' | 'region' | 'city'>
@@ -64,7 +65,7 @@ function getReportFieldValue(report: Report, field: ReportField) {
   return fallback ? report[fallback] || '' : ''
 }
 
-export default function ReportDetailView({ reports, reportType, clinicKey, backHref, onUpdate }: ReportDetailViewProps) {
+export default function ReportDetailView({ reports, reportType, clinicKey, backHref, onUpdate, onDelete }: ReportDetailViewProps) {
   const filteredReports = reports.filter(report => (reportType ? report.type === reportType : true))
   const selectedClinic = groupByClinic(filteredReports).find(group => group.key === clinicKey) || null
   const fields = reportType === 'interview' ? interviewReportFields : visitReportFields
@@ -304,6 +305,21 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
           font-size: 13px;
         }
 
+        .delete-button {
+          border: 0;
+          background: transparent;
+          color: #ba3030;
+          cursor: pointer;
+          font: inherit;
+          font-size: 13px;
+          padding: 2px 4px;
+        }
+
+        .delete-button:hover {
+          color: #8d1717;
+          text-decoration: underline;
+        }
+
         .entry-body {
           border-top: 1px solid #e4ebf0;
           padding: 18px;
@@ -379,7 +395,20 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
                         <span className="summary-chip">{getDateLabel(report.type)}: {report.date}</span>
                         <span className="summary-chip">{formatMajor(report.major)}</span>
                       </div>
-                      <span className="summary-arrow">詳細を開く</span>
+                      <div className="summary-main">
+                        <span className="summary-arrow">詳細を開く</span>
+                        {onDelete ? <button
+                          type="button"
+                          className="delete-button"
+                          onClick={event => {
+                            event.preventDefault()
+                            event.stopPropagation()
+                            if (window.confirm('この報告書を削除しますか？この操作は元に戻せません。')) {
+                              onDelete(report.id).catch(error => alert(error instanceof Error ? error.message : '報告書を削除できませんでした。'))
+                            }
+                          }}
+                        >削除</button> : null}
+                      </div>
                     </div>
                   </summary>
                   <div className="entry-body">

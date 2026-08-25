@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import * as XLSX from 'xlsx'
 import { Report } from '../../lib/data'
-import { getReports, importReports, ReportImportRow, ReportUpdate, updateReports } from '../../lib/repositories'
+import { deleteReport, getReports, importReports, ReportImportRow, ReportUpdate, updateReports } from '../../lib/repositories'
 import { normalizePrefecture } from '../../lib/reportGroups'
 import { isSupabaseConfigured, isSupabaseWriteConfigured } from '../../lib/supabase'
 
@@ -213,6 +213,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const reports = await updateReports(body.ids, parseReportUpdate(body.update))
       return res.status(200).json(reports)
+    } catch (error) {
+      return res.status(400).json({ error: getErrorMessage(error) })
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    if (!isSupabaseConfigured() || !isSupabaseWriteConfigured()) {
+      return res.status(503).json({ error: '報告書の削除には Supabase の接続設定と SUPABASE_SERVICE_ROLE_KEY が必要です。' })
+    }
+
+    try {
+      const body = JSON.parse((await readRequestBody(req)).toString('utf8')) as { id?: unknown }
+      if (typeof body.id !== 'string' || !body.id) {
+        throw new Error('削除対象の報告書を確認してください。')
+      }
+
+      await deleteReport(body.id)
+      return res.status(204).end()
     } catch (error) {
       return res.status(400).json({ error: getErrorMessage(error) })
     }

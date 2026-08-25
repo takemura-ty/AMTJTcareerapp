@@ -45,6 +45,21 @@ export default function StaffReportDetail() {
     }
   }
 
+  async function deleteReport(id: string) {
+    const response = await fetch('/api/reports', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    })
+    if (!response.ok) {
+      const data = await response.json()
+      throw new Error(data.error || '報告書を削除できませんでした。')
+    }
+
+    const updatedReports = await fetch('/api/reports').then(result => result.json())
+    setReports(updatedReports)
+  }
+
   const reportType = Array.isArray(type) ? type[0] : type
   const clinicKey = Array.isArray(clinic) ? clinic[0] : clinic
   const title = reportType === 'visit' ? '見学報告書' : reportType === 'interview' ? '面接報告書' : '見学・面接報告書'
@@ -69,7 +84,7 @@ export default function StaffReportDetail() {
             <p style={{ color: '#8b8b8b' }}>治療院ごとの報告書詳細を確認できます</p>
           </div>
 
-          <ReportDetailView reports={reports} reportType={reportType} clinicKey={clinicKey} backHref={backHref} onUpdate={updateReports} />
+          <ReportDetailView reports={reports} reportType={reportType} clinicKey={clinicKey} backHref={backHref} onUpdate={updateReports} onDelete={deleteReport} />
         </div>
       </div>
     </div>
