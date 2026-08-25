@@ -74,13 +74,13 @@ function parseRows(buffer: Buffer, type: Report['type']) {
   const errors: string[] = []
 
   rows.forEach((row, index) => {
-    const company = String(findValue(row, [type === 'visit' ? '見学先名' : '面接先名', '治療院名', '院名', '会社名'])).trim()
+    const company = String(findValue(row, ['見学先名', '面接先名', '治療院名', '院名', '会社名'])).trim()
     const region = normalizePrefecture(String(findValue(row, ['所在地', '都道府県', '地域'])))
-    const date = formatDate(findValue(row, [type === 'visit' ? '見学日' : '面接日', '日付']))
+    const date = formatDate(findValue(row, ['見学日', '面接日', '日付']))
     const major = parseMajor(String(findValue(row, ['学科名', '学科', '識別ID', '専攻'])).trim())
 
     if (!company || !region || !date || !major) {
-      errors.push(`${index + 2} 行目: ${type === 'visit' ? '見学先名、見学日' : '面接先名、面接日'}、所在地、学科名を確認してください。`)
+      errors.push(`${index + 2} 行目: 施設名、日付、所在地、学科名を確認してください。`)
       return
     }
 
