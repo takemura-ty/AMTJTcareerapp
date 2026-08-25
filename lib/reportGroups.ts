@@ -16,6 +16,7 @@ export const CITY_SPLIT_PREFECTURES = new Set(PREFECTURES)
 export function normalizePrefecture(name: string) {
   const compact = name.trim().replace(/[\s　]/g, '')
   if (compact === '北海道') return compact
+  if (compact === '京都府') return '京都'
   return compact.replace(/(都|道|府|県)+$/g, '')
 }
 
