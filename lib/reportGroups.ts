@@ -21,10 +21,12 @@ export function normalizePrefecture(name: string) {
 }
 
 export function formatPrefecture(name: string) {
+  const compact = name.trim().replace(/[\s　]/g, '')
+  if (compact === '京都' || compact === '京都府') return '京都府'
   const prefecture = normalizePrefecture(name)
   if (prefecture === '北海道') return prefecture
   if (prefecture === '東京') return '東京都'
-  if (prefecture === '大阪' || prefecture === '京都') return `${prefecture}府`
+  if (prefecture === '大阪') return `${prefecture}府`
   return `${prefecture}県`
 }
 
