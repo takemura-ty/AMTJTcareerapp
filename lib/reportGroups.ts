@@ -16,13 +16,13 @@ export const CITY_SPLIT_PREFECTURES = new Set(PREFECTURES)
 export function normalizePrefecture(name: string) {
   const compact = name.trim().replace(/[\s　]/g, '')
   if (compact === '北海道') return compact
-  if (compact === '京都府') return '京都'
+  if (compact === '京' || compact === '京都' || compact === '京都府') return '京都'
   return compact.replace(/(都|道|府|県)+$/g, '')
 }
 
 export function formatPrefecture(name: string) {
   const compact = name.trim().replace(/[\s　]/g, '')
-  if (compact === '京都' || compact === '京都府') return '京都府'
+  if (compact === '京' || compact === '京都' || compact === '京都府') return '京都府'
   const prefecture = normalizePrefecture(name)
   if (prefecture === '北海道') return prefecture
   if (prefecture === '東京') return '東京都'
