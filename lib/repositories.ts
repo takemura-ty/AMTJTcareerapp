@@ -111,7 +111,7 @@ export async function getReports() {
 
   const { data, error } = await supabase
     .from('reports')
-    .select('id, company, sub_company, region, city, type, date, major, updated_at, supervisor_impression, staff_impression, clinic_impression, other_notes, interview_wish, advice, interviewer_count, interviewer, exam_contents, questions_asked, written_practical_exam, result, result_notification')
+    .select('id, company, sub_company, region, city, type, date, major, updated_at, supervisor_impression, staff_impression, clinic_impression, other_notes, interview_wish, advice')
     .order('date', { ascending: false })
 
   if (error || !data) {
@@ -209,7 +209,7 @@ export async function updateReports(ids: string[], update: ReportUpdate) {
     .from('reports')
     .update(rows)
     .in('id', updateIds)
-    .select('id, company, sub_company, region, city, type, date, major, updated_at, supervisor_impression, staff_impression, clinic_impression, other_notes, interview_wish, advice, interviewer_count, interviewer, exam_contents, questions_asked, written_practical_exam, result, result_notification')
+    .select('id, company, sub_company, region, city, type, date, major, updated_at, supervisor_impression, staff_impression, clinic_impression, other_notes, interview_wish, advice')
 
   if (error) {
     throw error
