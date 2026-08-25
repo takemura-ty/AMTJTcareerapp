@@ -28,7 +28,7 @@ export default function StaffReports(){
       return
     }
 
-    if (reportType !== 'visit') {
+    if (reportType !== 'visit' && reportType !== 'interview') {
       alert('報告書の種別を確認できません。')
       return
     }
@@ -74,11 +74,12 @@ export default function StaffReports(){
 
   const reportType = Array.isArray(type) ? type[0] : type
   const latestImport = useMemo(() => {
-    const visitReports = reports.filter(report => report.type === 'visit' && report.updatedAt)
-    const uploadedAt = visitReports.map(report => report.updatedAt as string).sort((left, right) => right.localeCompare(left))[0]
+    if (reportType !== 'visit' && reportType !== 'interview') return null
+    const importedReports = reports.filter(report => report.type === reportType && report.updatedAt)
+    const uploadedAt = importedReports.map(report => report.updatedAt as string).sort((left, right) => right.localeCompare(left))[0]
     if (!uploadedAt) return null
 
-    const latestReport = visitReports
+    const latestReport = importedReports
       .filter(report => report.updatedAt === uploadedAt)
       .sort((left, right) => {
         const dateCompare = right.date.localeCompare(left.date)
@@ -87,8 +88,11 @@ export default function StaffReports(){
       })[0]
 
     return latestReport ? { uploadedAt, report: latestReport } : null
-  }, [reports])
+  }, [reportType, reports])
   const isInterviewPage = reportType === 'interview'
+  const canUpload = reportType === 'visit' || reportType === 'interview'
+  const reportLabel = isInterviewPage ? '面接報告書' : '見学報告書'
+  const reportDateLabel = isInterviewPage ? '面接日' : '見学日'
   const title = isInterviewPage ? '面接報告書' : reportType === 'visit' ? '見学報告書' : '見学・面接報告書一覧'
   const introText = isInterviewPage
     ? '職員向けに、面接報告書を治療院ごとの一覧と折りたたみ形式で確認できます'
@@ -115,9 +119,9 @@ export default function StaffReports(){
             <p style={{color:'#8b8b8b'}}>{introText}</p>
           </div>
 
-          {reportType === 'visit' && <div style={{maxWidth:960,margin:'18px auto 0',padding:'18px 20px',border:'1px dashed #cfd8df',borderRadius:12,background:'#f8fbfd'}}>
+          {canUpload && <div style={{maxWidth:960,margin:'18px auto 0',padding:'18px 20px',border:'1px dashed #cfd8df',borderRadius:12,background:'#f8fbfd'}}>
             <h3 style={{margin:'0 0 8px',fontSize:20,textAlign:'center'}}>Excel 資料アップロード</h3>
-            <p style={{margin:'0 0 14px',color:'#666',textAlign:'center'}}>見学報告書の Excel ファイルをアップロードして一覧へ追加できます。</p>
+            <p style={{margin:'0 0 14px',color:'#666',textAlign:'center'}}>{reportLabel}の Excel ファイルをアップロードして一覧へ追加できます。</p>
             <form onSubmit={uploadExcel} style={{display:'flex',gap:12,alignItems:'center',justifyContent:'center',flexWrap:'wrap'}}>
               <input name="report-file" type="file" accept=".xlsx,.xls" disabled={isUploading} style={{maxWidth:360}} />
               <button className="button btn-blue" type="submit" disabled={isUploading}>{isUploading ? 'アップロード中...' : 'Excel をアップロード'}</button>
@@ -129,10 +133,10 @@ export default function StaffReports(){
             </div>}
           </div>}
 
-          {reportType === 'visit' && latestImport && <div style={{maxWidth:960,margin:'0 auto 18px',padding:'14px 20px',borderTop:'1px solid #dce5eb',color:'#425563',fontSize:14,lineHeight:1.7}}>
+          {canUpload && latestImport && <div style={{maxWidth:960,margin:'0 auto 18px',padding:'14px 20px',borderTop:'1px solid #dce5eb',color:'#425563',fontSize:14,lineHeight:1.7}}>
             <strong>最新アップロード状況</strong><br />
             アップロード日: {latestImport.uploadedAt}<br />
-            最終データ: 見学日 {latestImport.report.date} / {latestImport.report.major === 'shinkyu' ? '鍼灸師学科' : '柔道整復師学科'} / {latestImport.report.company}
+            最終データ: {reportDateLabel} {latestImport.report.date} / {latestImport.report.major === 'shinkyu' ? '鍼灸師学科' : '柔道整復師学科'} / {latestImport.report.company}
           </div>}
 
           <ReportBrowser reports={reports} reportType={reportType} detailPath="/staff/report-detail" />

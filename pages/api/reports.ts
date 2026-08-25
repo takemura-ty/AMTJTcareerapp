@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import * as XLSX from 'xlsx'
 import { Report } from '../../lib/data'
-import { getReports, importVisitReports, ReportImportRow, ReportUpdate, updateReports } from '../../lib/repositories'
+import { getReports, importReports, ReportImportRow, ReportUpdate, updateReports } from '../../lib/repositories'
 import { normalizePrefecture } from '../../lib/reportGroups'
 import { isSupabaseConfigured, isSupabaseWriteConfigured } from '../../lib/supabase'
 
@@ -58,7 +58,7 @@ function parseMajor(value: string): Report['major'] | null {
   return null
 }
 
-function parseRows(buffer: Buffer) {
+function parseRows(buffer: Buffer, type: Report['type']) {
   const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true })
   const sheet = workbook.Sheets[workbook.SheetNames[0]]
   if (!sheet) {
@@ -74,13 +74,13 @@ function parseRows(buffer: Buffer) {
   const errors: string[] = []
 
   rows.forEach((row, index) => {
-    const company = String(findValue(row, ['見学先名', '治療院名', '院名', '会社名'])).trim()
+    const company = String(findValue(row, [type === 'visit' ? '見学先名' : '面接先名', '治療院名', '院名', '会社名'])).trim()
     const region = normalizePrefecture(String(findValue(row, ['所在地', '都道府県', '地域'])))
-    const date = formatDate(findValue(row, ['見学日', '日付']))
+    const date = formatDate(findValue(row, [type === 'visit' ? '見学日' : '面接日', '日付']))
     const major = parseMajor(String(findValue(row, ['学科名', '学科', '識別ID', '専攻'])).trim())
 
     if (!company || !region || !date || !major) {
-      errors.push(`${index + 2} 行目: 見学先名、所在地、見学日、学科名を確認してください。`)
+      errors.push(`${index + 2} 行目: ${type === 'visit' ? '見学先名、見学日' : '面接先名、面接日'}、所在地、学科名を確認してください。`)
       return
     }
 
@@ -205,13 +205,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(503).json({ error: '報告書一覧の更新には Supabase の接続設定と SUPABASE_SERVICE_ROLE_KEY が必要です。' })
   }
 
-  if (String(req.headers['x-report-type'] || '') !== 'visit') {
-    return res.status(400).json({ error: '見学報告書のアップロード画面から実行してください。' })
+  const reportType = String(req.headers['x-report-type'] || '')
+  if (reportType !== 'visit' && reportType !== 'interview') {
+    return res.status(400).json({ error: '見学または面接報告書のアップロード画面から実行してください。' })
   }
 
   try {
-    const { reports, errors } = parseRows(await readRequestBody(req))
-    const result = await importVisitReports(reports)
+    const { reports, errors } = parseRows(await readRequestBody(req), reportType)
+    const result = await importReports(reports, reportType)
     return res.status(200).json({ total: reports.length + errors.length, ...result, errors })
   } catch (error) {
     if (error instanceof Error && error.message === 'FILE_TOO_LARGE') {

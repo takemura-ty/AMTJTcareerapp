@@ -195,7 +195,7 @@ export async function updateReports(ids: string[], update: ReportUpdate) {
   return (data || []).map(mapReportRow)
 }
 
-export async function importVisitReports(reports: ReportImportRow[]): Promise<ReportImportResult> {
+export async function importReports(reports: ReportImportRow[], type: Report['type']): Promise<ReportImportResult> {
   const supabase = getSupabaseServerClient()
   if (!supabase) {
     throw new Error('Supabase is not configured')
@@ -204,7 +204,7 @@ export async function importVisitReports(reports: ReportImportRow[]): Promise<Re
   const { data: existingReports, error: selectError } = await supabase
     .from('reports')
     .select('company, date, major')
-    .eq('type', 'visit')
+    .eq('type', type)
 
   if (selectError) {
     throw selectError
@@ -232,7 +232,7 @@ export async function importVisitReports(reports: ReportImportRow[]): Promise<Re
     sub_company: null,
     region: report.region,
     city: report.city || null,
-    type: 'visit',
+    type,
     date: report.date,
     major: report.major,
     updated_at: updatedAt,

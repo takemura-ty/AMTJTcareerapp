@@ -44,8 +44,8 @@ File Uploads
 Report List Imports
 -------------------
 
-- Staff can upload `.xlsx` or `.xls` files from the visit report page. New rows are added as visit reports; existing rows with the same company, date, and major are skipped.
-- Required header columns are `学科名`, `見学先名`, `所在地`, and `見学日`. `学科名` accepts values containing `鍼灸` or `柔道整復`.
+- Staff can upload `.xlsx` or `.xls` files from the visit or interview report page. New rows are added to the selected report type; existing rows with the same company, date, and major are skipped.
+- Required header columns are `学科名`, `所在地`, and either `見学先名` with `見学日`, or `面接先名` with `面接日`. `治療院名` and `日付` can be used instead of the type-specific column names. `学科名` accepts values containing `鍼灸` or `柔道整復`.
 - Optional columns are `市町村`, `院長先生や見学担当者の方の印象`, `スタッフの印象`, `院全体の印象`, `その他（印象に残ったことなど）`, `面接希望（３年生のみ）（１.２年生は希望者のみ）`, and `今後見学を希望する後輩へのアドバイス`.
 - The import requires `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`.
 
