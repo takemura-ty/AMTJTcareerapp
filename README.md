@@ -47,6 +47,7 @@ Report List Imports
 - Staff can upload `.xlsx` or `.xls` files from the visit or interview report page. New rows are added to the selected report type; existing rows with the same company, date, and major are skipped.
 - Required header columns are `学科名`, `所在地`, and either `見学先名` with `見学日`, or `面接先名` with `面接日`. `治療院名` and `日付` can be used instead of the type-specific column names. `学科名` accepts values containing `鍼灸` or `柔道整復`.
 - Optional columns are `市町村`, `院長先生や見学担当者の方の印象`, `スタッフの印象`, `院全体の印象`, `その他（印象に残ったことなど）`, `面接希望（３年生のみ）（１.２年生は希望者のみ）`, and `今後見学を希望する後輩へのアドバイス`.
+- Interview report uploads also accept `面接官の人数`, `面接担当者`, `試験内容`, `質問を受けた内容`, `筆記試験・実技試験があった場合その内容`, `結果`, `結果が後日の場合、いつどのような形で届くのか`, and `今後面接を希望する後輩へのアドバイス`. Run the updated `supabase/schema.sql` once to add the corresponding columns and migrate existing interview reports.
 - The import requires `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`.
 
 Staff Login

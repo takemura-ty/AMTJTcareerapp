@@ -19,6 +19,13 @@ type ReportRow = {
   other_notes: string | null
   interview_wish: string | null
   advice: string | null
+  interviewer_count: string | null
+  interviewer: string | null
+  exam_contents: string | null
+  questions_asked: string | null
+  written_practical_exam: string | null
+  result: string | null
+  result_notification: string | null
 }
 
 type WorkshopRow = {
@@ -60,7 +67,14 @@ function mapReportRow(row: ReportRow): Report {
     clinicImpression: row.clinic_impression || undefined,
     otherNotes: row.other_notes || undefined,
     interviewWish: row.interview_wish || undefined,
-    advice: row.advice || undefined
+    advice: row.advice || undefined,
+    interviewerCount: row.interviewer_count || undefined,
+    interviewer: row.interviewer || undefined,
+    examContents: row.exam_contents || undefined,
+    questionsAsked: row.questions_asked || undefined,
+    writtenPracticalExam: row.written_practical_exam || undefined,
+    result: row.result || undefined,
+    resultNotification: row.result_notification || undefined
   }
 }
 
@@ -97,7 +111,7 @@ export async function getReports() {
 
   const { data, error } = await supabase
     .from('reports')
-    .select('id, company, sub_company, region, city, type, date, major, updated_at, supervisor_impression, staff_impression, clinic_impression, other_notes, interview_wish, advice')
+    .select('id, company, sub_company, region, city, type, date, major, updated_at, supervisor_impression, staff_impression, clinic_impression, other_notes, interview_wish, advice, interviewer_count, interviewer, exam_contents, questions_asked, written_practical_exam, result, result_notification')
     .order('date', { ascending: false })
 
   if (error || !data) {
@@ -118,7 +132,9 @@ export type ReportImportResult = {
 export type ReportUpdate = Partial<Pick<Report,
   'company' | 'region' | 'city' | 'date' | 'major' |
   'supervisorImpression' | 'staffImpression' | 'clinicImpression' |
-  'otherNotes' | 'interviewWish' | 'advice'
+  'otherNotes' | 'interviewWish' | 'advice' | 'interviewerCount' |
+  'interviewer' | 'examContents' | 'questionsAsked' | 'writtenPracticalExam' |
+  'result' | 'resultNotification'
 >>
 
 export async function updateReports(ids: string[], update: ReportUpdate) {
@@ -175,7 +191,14 @@ export async function updateReports(ids: string[], update: ReportUpdate) {
     ...(update.clinicImpression !== undefined ? { clinic_impression: update.clinicImpression || null } : {}),
     ...(update.otherNotes !== undefined ? { other_notes: update.otherNotes || null } : {}),
     ...(update.interviewWish !== undefined ? { interview_wish: update.interviewWish || null } : {}),
-    ...(update.advice !== undefined ? { advice: update.advice || null } : {})
+    ...(update.advice !== undefined ? { advice: update.advice || null } : {}),
+    ...(update.interviewerCount !== undefined ? { interviewer_count: update.interviewerCount || null } : {}),
+    ...(update.interviewer !== undefined ? { interviewer: update.interviewer || null } : {}),
+    ...(update.examContents !== undefined ? { exam_contents: update.examContents || null } : {}),
+    ...(update.questionsAsked !== undefined ? { questions_asked: update.questionsAsked || null } : {}),
+    ...(update.writtenPracticalExam !== undefined ? { written_practical_exam: update.writtenPracticalExam || null } : {}),
+    ...(update.result !== undefined ? { result: update.result || null } : {}),
+    ...(update.resultNotification !== undefined ? { result_notification: update.resultNotification || null } : {})
   }
 
   if (!updateIds.length || !Object.keys(rows).length) {
@@ -186,7 +209,7 @@ export async function updateReports(ids: string[], update: ReportUpdate) {
     .from('reports')
     .update(rows)
     .in('id', updateIds)
-    .select('id, company, sub_company, region, city, type, date, major, updated_at, supervisor_impression, staff_impression, clinic_impression, other_notes, interview_wish, advice')
+    .select('id, company, sub_company, region, city, type, date, major, updated_at, supervisor_impression, staff_impression, clinic_impression, other_notes, interview_wish, advice, interviewer_count, interviewer, exam_contents, questions_asked, written_practical_exam, result, result_notification')
 
   if (error) {
     throw error
@@ -241,7 +264,14 @@ export async function importReports(reports: ReportImportRow[], type: Report['ty
     clinic_impression: report.clinicImpression || null,
     other_notes: report.otherNotes || null,
     interview_wish: report.interviewWish || null,
-    advice: report.advice || null
+    advice: report.advice || null,
+    interviewer_count: report.interviewerCount || null,
+    interviewer: report.interviewer || null,
+    exam_contents: report.examContents || null,
+    questions_asked: report.questionsAsked || null,
+    written_practical_exam: report.writtenPracticalExam || null,
+    result: report.result || null,
+    result_notification: report.resultNotification || null
   }))
 
   const { error: insertError } = await supabase.from('reports').insert(rows)

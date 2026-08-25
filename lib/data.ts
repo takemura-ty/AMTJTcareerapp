@@ -14,6 +14,13 @@ export type Report = {
   otherNotes?: string
   interviewWish?: string
   advice?: string
+  interviewerCount?: string
+  interviewer?: string
+  examContents?: string
+  questionsAsked?: string
+  writtenPracticalExam?: string
+  result?: string
+  resultNotification?: string
 }
 
 export type Workshop = {

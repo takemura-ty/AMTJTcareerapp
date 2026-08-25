@@ -5,7 +5,9 @@ import { formatMajor, formatPrefecture, groupByClinic } from '../lib/reportGroup
 
 type ReportEdit = Partial<Pick<Report,
   'company' | 'region' | 'city' | 'supervisorImpression' | 'staffImpression' |
-  'clinicImpression' | 'otherNotes' | 'interviewWish' | 'advice'
+  'clinicImpression' | 'otherNotes' | 'interviewWish' | 'advice' |
+  'interviewerCount' | 'interviewer' | 'examContents' | 'questionsAsked' |
+  'writtenPracticalExam' | 'result' | 'resultNotification'
 >>
 
 type ReportDetailViewProps = {
@@ -18,13 +20,25 @@ type ReportDetailViewProps = {
 
 type ReportField = Exclude<keyof ReportEdit, 'company' | 'region' | 'city'>
 
-const reportFields: { key: ReportField; label: string }[] = [
+const visitReportFields: { key: ReportField; label: string }[] = [
   { key: 'supervisorImpression', label: '院長先生や見学担当者の方の印象' },
   { key: 'staffImpression', label: 'スタッフの印象' },
   { key: 'clinicImpression', label: '院全体の印象' },
   { key: 'otherNotes', label: 'その他（印象に残ったことなど）' },
   { key: 'interviewWish', label: '面接希望（３年生のみ）（１.２年生は希望者のみ）' },
   { key: 'advice', label: '今後見学を希望する後輩へのアドバイス' }
+]
+
+const interviewReportFields: { key: ReportField; label: string }[] = [
+  { key: 'interviewerCount', label: '面接官の人数' },
+  { key: 'interviewer', label: '面接担当者' },
+  { key: 'examContents', label: '試験内容' },
+  { key: 'questionsAsked', label: '質問を受けた内容' },
+  { key: 'writtenPracticalExam', label: '筆記試験・実技試験があった場合その内容' },
+  { key: 'otherNotes', label: 'その他（印象に残った点・気になった点等）' },
+  { key: 'result', label: '結果' },
+  { key: 'resultNotification', label: '結果が後日の場合、いつどのような形で届くのか' },
+  { key: 'advice', label: '今後面接を希望する後輩へのアドバイス' }
 ]
 
 function getDateLabel(type: Report['type']) {
@@ -35,9 +49,25 @@ function formatUpdatedDate(value?: string) {
   return value ? value.slice(0, 10) : '未設定'
 }
 
+function getReportFieldValue(report: Report, field: ReportField) {
+  const value = report[field]
+  if (value) return value
+  if (report.type !== 'interview') return ''
+
+  const legacyField: Partial<Record<ReportField, keyof Report>> = {
+    interviewer: 'supervisorImpression',
+    examContents: 'clinicImpression',
+    questionsAsked: 'staffImpression',
+    result: 'interviewWish'
+  }
+  const fallback = legacyField[field]
+  return fallback ? report[fallback] || '' : ''
+}
+
 export default function ReportDetailView({ reports, reportType, clinicKey, backHref, onUpdate }: ReportDetailViewProps) {
   const filteredReports = reports.filter(report => (reportType ? report.type === reportType : true))
   const selectedClinic = groupByClinic(filteredReports).find(group => group.key === clinicKey) || null
+  const fields = reportType === 'interview' ? interviewReportFields : visitReportFields
   const [isEditingClinic, setIsEditingClinic] = useState(false)
   const [clinicDraft, setClinicDraft] = useState({ company: '', region: '', city: '' })
   const [editingField, setEditingField] = useState<{ reportId: string; field: ReportField; value: string } | null>(null)
@@ -353,13 +383,13 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
                     </div>
                   </summary>
                   <div className="entry-body">
-                    {reportFields.map(field => {
+                    {fields.map(field => {
                       const isEditingField = editingField?.reportId === report.id && editingField.field === field.key
                       return (
                         <div key={field.key} className="field">
                           <div className="field-heading">
                             <h4>{field.label}</h4>
-                            {onUpdate ? <button type="button" className="edit-button" onClick={() => setEditingField({ reportId: report.id, field: field.key, value: report[field.key] || '' })} aria-label={`${field.label}を編集`}>&#9998;</button> : null}
+                            {onUpdate ? <button type="button" className="edit-button" onClick={() => setEditingField({ reportId: report.id, field: field.key, value: getReportFieldValue(report, field.key) })} aria-label={`${field.label}を編集`}>&#9998;</button> : null}
                           </div>
                           {isEditingField ? (
                             <>
@@ -369,7 +399,7 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
                                 <button type="button" className="cancel-button" onClick={() => setEditingField(null)} disabled={isSaving}>キャンセル</button>
                               </div>
                             </>
-                          ) : <p>{report[field.key] || '記載なし'}</p>}
+                          ) : <p>{getReportFieldValue(report, field.key) || '記載なし'}</p>}
                         </div>
                       )
                     })}

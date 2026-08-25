@@ -108,7 +108,14 @@ function parseRows(buffer: Buffer, type: Report['type']) {
       clinicImpression: String(findValue(row, ['院全体の印象', '治療院の印象', '院内の印象'])).trim(),
       otherNotes: String(findValue(row, ['その他（印象に残ったことなど）', 'その他', 'その他の感想'])).trim(),
       interviewWish: String(findValue(row, ['面接希望（３年生のみ）（１.２年生は希望者のみ）', '面接希望'])).trim(),
-      advice: String(findValue(row, ['今後見学を希望する後輩へのアドバイス', 'アドバイス'])).trim()
+      advice: String(findValue(row, ['今後面接を希望する後輩へのアドバイス', '今後見学を希望する後輩へのアドバイス', 'アドバイス'])).trim(),
+      interviewerCount: String(findValue(row, ['面接官の人数', '面接官数'])).trim(),
+      interviewer: String(findValue(row, ['面接担当者', '面接官'])).trim(),
+      examContents: String(findValue(row, ['試験内容'])).trim(),
+      questionsAsked: String(findValue(row, ['質問を受けた内容', '質問内容'])).trim(),
+      writtenPracticalExam: String(findValue(row, ['筆記試験・実技試験があった場合その内容', '筆記試験実技試験があった場合その内容', '筆記試験', '実技試験'])).trim(),
+      result: String(findValue(row, ['結果'])).trim(),
+      resultNotification: String(findValue(row, ['結果が後日の場合、いつどのような形で届くのか', '結果が後日の場合いつどのような形で届くのか', '結果通知'])).trim()
     })
   })
 
@@ -152,7 +159,9 @@ function parseReportUpdate(value: unknown): ReportUpdate {
   const source = value as Record<string, unknown>
   const textFields = [
     'company', 'region', 'city', 'date', 'supervisorImpression', 'staffImpression',
-    'clinicImpression', 'otherNotes', 'interviewWish', 'advice'
+    'clinicImpression', 'otherNotes', 'interviewWish', 'advice', 'interviewerCount',
+    'interviewer', 'examContents', 'questionsAsked', 'writtenPracticalExam',
+    'result', 'resultNotification'
   ] as const
   const update: Record<string, string> = {}
 
