@@ -50,21 +50,6 @@ export default function Reports(){
             }
             .student-reports-page .student-top .header { max-width: 1120px; padding: 0 16px; }
             .student-reports-page .student-top .header h2 { font-size: 26px; }
-            .student-reports-page .button.logout {
-              display: inline-flex;
-              align-items: center;
-              gap: 7px;
-              padding: 9px 14px;
-              border: 1px solid #052f4f;
-              border-radius: 999px;
-              background: #052f4f;
-              color: #fff;
-              box-shadow: 0 5px 14px rgba(0, 46, 79, 0.24);
-              font-weight: 700;
-              transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-            }
-            .student-reports-page .button.logout::before { content: '←'; font-size: 17px; line-height: 1; }
-            .student-reports-page .button.logout:hover { transform: translateY(-1px); background: #07466f; box-shadow: 0 8px 18px rgba(0, 46, 79, 0.3); }
             .student-reports-page .container { max-width: 1120px; margin: 0 auto; }
             .student-reports-page .card { background: transparent; padding: 0; box-shadow: none; }
             .student-reports-page .reports-overview,
@@ -75,6 +60,22 @@ export default function Reports(){
               box-shadow: 0 18px 48px rgba(7, 41, 89, 0.2);
             }
             .student-reports-page .reports-browser-card { margin-top: 24px; }
+            .student-reports-page .report-page-title {
+              margin: 0;
+              color: #052f4f;
+              font-size: 34px;
+              font-weight: 800;
+              letter-spacing: 3px;
+              line-height: 1.1;
+            }
+            .student-reports-page .report-page-intro {
+              max-width: 620px;
+              margin: 14px auto 0;
+              color: #46616f;
+              font-size: 16px;
+              font-weight: 600;
+              line-height: 1.8;
+            }
             @media (max-width: 640px) {
               .student-reports-page { padding: 0 0 20px; }
               .student-reports-page .student-top { padding: 12px 16px; margin-bottom: 8px; }
@@ -83,13 +84,15 @@ export default function Reports(){
               .student-reports-page .reports-overview,
               .student-reports-page .reports-browser-card { padding: 16px; }
               .student-reports-page .reports-browser-card { margin-top: 16px; }
+              .student-reports-page .report-page-title { font-size: 26px; letter-spacing: 2px; }
+              .student-reports-page .report-page-intro { font-size: 14px; }
             }
           `}</style>
 
           <section className="reports-overview">
             <div style={{textAlign:'center'}}>
-              <h2 style={{marginTop:0}}>EXAM REPORTS</h2>
-              <p style={{color:'#8b8b8b'}}>{introText}</p>
+              <h2 className="report-page-title">EXAM REPORTS</h2>
+              <p className="report-page-intro">{introText}</p>
             </div>
           </section>
 

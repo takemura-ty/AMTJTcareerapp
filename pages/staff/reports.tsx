@@ -127,19 +127,6 @@ export default function StaffReports(){
             }
             .staff-reports-page .student-top .header { max-width: 1120px; padding: 0 16px; }
             .staff-reports-page .student-top .header h2 { font-size: 26px; }
-            .staff-reports-page .button.logout {
-              display: inline-flex;
-              align-items: center;
-              gap: 7px;
-              padding: 9px 14px;
-              border: 1px solid rgba(0, 111, 163, 0.16);
-              border-radius: 999px;
-              box-shadow: 0 5px 14px rgba(0, 68, 107, 0.14);
-              font-weight: 700;
-              transition: transform 0.15s ease, box-shadow 0.15s ease;
-            }
-            .staff-reports-page .button.logout::before { content: '←'; font-size: 17px; line-height: 1; }
-            .staff-reports-page .button.logout:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(0, 68, 107, 0.2); }
             .staff-reports-page .container { max-width: 1120px; margin: 0 auto; }
             .staff-reports-page .card {
               background: transparent;

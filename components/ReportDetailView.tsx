@@ -237,13 +237,20 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
         .back-button {
           display: inline-flex;
           align-items: center;
-          border: 1px solid #d9e3eb;
-          background: #fff;
+          gap: 7px;
+          border: 1px solid #052f4f;
+          background: #052f4f;
           border-radius: 999px;
           padding: 9px 14px;
-          color: #27404f;
+          color: #fff;
           text-decoration: none;
+          font-weight: 700;
+          box-shadow: 0 5px 14px rgba(0, 46, 79, 0.24);
+          transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
         }
+
+        .back-button::before { content: '←'; font-size: 17px; line-height: 1; }
+        .back-button:hover { transform: translateY(-1px); background: #07466f; box-shadow: 0 8px 18px rgba(0, 46, 79, 0.3); }
 
         .empty {
           color: #667784;

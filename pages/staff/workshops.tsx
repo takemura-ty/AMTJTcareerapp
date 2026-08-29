@@ -86,25 +86,23 @@ export default function StaffWorkshops(){
     <div className="container">
       <div className="header">
         <h2>INFORMATION SESSION</h2>
-        <Link href="/staff" className="button outline">戻る</Link>
+        <Link href="/staff" className="button navigation-button">戻る</Link>
       </div>
 
       <div className="card">
         {current && (
           <div style={{display:'flex',gap:12,alignItems:'center',flexDirection:'column'}}>
-            {current.pdfUrl ? (
-              <a className="workshop-open-link workshop-preview" href={current.pdfUrl} target="_blank" rel="noreferrer" aria-label={`${current.title}の資料を開く`}>
-                {isImageAsset(current.pdfUrl) ? (
+            <div className="workshop-preview">
+              {current.pdfUrl ? (
+                isImageAsset(current.pdfUrl) ? (
                   <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                 ) : (
                   <DocumentPreview src={current.pdfUrl} title={current.title} />
-                )}
-              </a>
-            ) : (
-              <div className="workshop-preview">
+                )
+              ) : (
                 <div style={{padding:24}}><strong>{current.title}</strong></div>
-              </div>
-            )}
+              )}
+            </div>
             <div className="workshop-summary">
               <div className="session-summary">
                 <strong className="session-title">{current.title}</strong>
@@ -131,10 +129,10 @@ export default function StaffWorkshops(){
           {upcoming.map(u=> (
             <Fragment key={u.id}>
               <article className="workshop-item">
-                <a className="workshop-item-link" href={u.pdfUrl} target="_blank" rel="noreferrer" aria-label={`${u.title}の資料を開く`}>
+                <div>
                   <strong>{u.title}</strong>
                   <span>{u.date} 開催</span>
-                </a>
+                </div>
                 <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                   {u.pdfUrl && <a className="button btn-blue" href={u.pdfUrl} target="_blank" rel="noreferrer">資料を開く</a>}
                   <button type="button" className="button btn-acu" onClick={() => startEditing(u)}>修正</button>
@@ -150,10 +148,10 @@ export default function StaffWorkshops(){
           {past.map(u=> (
             <Fragment key={u.id}>
               <article className="workshop-item">
-                <a className="workshop-item-link" href={u.pdfUrl} target="_blank" rel="noreferrer" aria-label={`${u.title}の資料を開く`}>
+                <div>
                   <strong>{u.title}</strong>
                   <span>{u.date} 開催</span>
-                </a>
+                </div>
                 <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
                   {u.pdfUrl && <a className="button btn-blue" href={u.pdfUrl} target="_blank" rel="noreferrer">資料を開く</a>}
                   <button type="button" className="button btn-acu" onClick={() => startEditing(u)}>修正</button>

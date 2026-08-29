@@ -35,7 +35,7 @@ export default function Submit(){
     <div className="container">
       <div className="header">
         <h2>報告書提出</h2>
-        <Link href="/student" className="button outline">戻る</Link>
+        <Link href="/student" className="button navigation-button">戻る</Link>
       </div>
 
       <div className="card">
