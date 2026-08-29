@@ -99,7 +99,7 @@ export default function StaffReports(){
     : '職員向けに、見学報告書を治療院ごとの一覧と折りたたみ形式で確認できます'
 
   return (
-    <div>
+    <div className="staff-reports-page">
       <div className="student-top">
         <div className="header">
           <h2>{title}</h2>
@@ -110,8 +110,35 @@ export default function StaffReports(){
       <div className="container">
         <div className="card">
           <style jsx global>{`
-            .card { background: var(--card); }
-            .button.btn-blue { background: var(--hinata-blue) !important; color:#fff !important }
+            .staff-reports-page {
+              min-height: 100%;
+              background:
+                linear-gradient(135deg, rgba(0, 184, 241, 0.92), rgba(30, 105, 231, 0.88) 48%, rgba(117, 83, 224, 0.84)),
+                #dff5ff;
+              padding: 20px 0 32px;
+            }
+            .staff-reports-page .student-top {
+              max-width: 1120px;
+              margin: 0 auto 18px;
+              padding: 16px 24px;
+              background: transparent;
+            }
+            .staff-reports-page .student-top::after { display: none; }
+            .staff-reports-page .student-top .header { max-width: none; padding: 0; }
+            .staff-reports-page .student-top .header h2 { font-size: 26px; }
+            .staff-reports-page .container { max-width: 1120px; margin: 0 auto; }
+            .staff-reports-page .card {
+              background: rgba(255, 255, 255, 0.96);
+              padding: 28px;
+              box-shadow: 0 18px 48px rgba(7, 41, 89, 0.2);
+            }
+            .staff-reports-page .button.btn-blue { background: var(--hinata-blue) !important; color:#fff !important }
+            @media (max-width: 640px) {
+              .staff-reports-page { padding: 8px 0 20px; }
+              .staff-reports-page .student-top { padding: 12px 16px; margin-bottom: 8px; }
+              .staff-reports-page .student-top .header h2 { font-size: 20px; }
+              .staff-reports-page .card { padding: 16px; }
+            }
           `}</style>
 
           <div style={{textAlign:'center'}}>
