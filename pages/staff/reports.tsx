@@ -118,14 +118,14 @@ export default function StaffReports(){
                 radial-gradient(ellipse 38% 12% at 83% 10%, rgba(255, 255, 255, 0.85) 0 20%, transparent 43%),
                 radial-gradient(ellipse 48% 14% at 76% 15%, rgba(255, 255, 255, 0.68) 0 18%, transparent 40%),
                 linear-gradient(180deg, #72d4f4 0%, #bdeeff 46%, #e7f8ff 100%);
-              padding: 20px 0 32px;
+              padding: 0 0 32px;
             }
             .staff-reports-page .student-top {
-              max-width: 1120px;
-              margin: 0 auto 18px;
-              padding: 16px 24px;
+              margin: 0 0 18px;
+              padding: 16px;
+              border-radius: 0;
             }
-            .staff-reports-page .student-top .header { max-width: none; padding: 0; }
+            .staff-reports-page .student-top .header { max-width: 1120px; padding: 0 16px; }
             .staff-reports-page .student-top .header h2 { font-size: 26px; }
             .staff-reports-page .button.logout {
               display: inline-flex;
@@ -142,25 +142,37 @@ export default function StaffReports(){
             .staff-reports-page .button.logout:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(0, 68, 107, 0.2); }
             .staff-reports-page .container { max-width: 1120px; margin: 0 auto; }
             .staff-reports-page .card {
+              background: transparent;
+              padding: 0;
+              box-shadow: none;
+            }
+            .staff-reports-page .reports-overview,
+            .staff-reports-page .reports-browser-card {
               background: rgba(255, 255, 255, 0.96);
               padding: 28px;
+              border-radius: 8px;
               box-shadow: 0 18px 48px rgba(7, 41, 89, 0.2);
             }
+            .staff-reports-page .reports-browser-card { margin-top: 24px; }
             .staff-reports-page .button.btn-blue { background: var(--hinata-blue) !important; color:#fff !important }
             @media (max-width: 640px) {
-              .staff-reports-page { padding: 8px 0 20px; }
+              .staff-reports-page { padding: 0 0 20px; }
               .staff-reports-page .student-top { padding: 12px 16px; margin-bottom: 8px; }
+              .staff-reports-page .student-top .header { padding: 0 4px; }
               .staff-reports-page .student-top .header h2 { font-size: 20px; }
-              .staff-reports-page .card { padding: 16px; }
+              .staff-reports-page .reports-overview,
+              .staff-reports-page .reports-browser-card { padding: 16px; }
+              .staff-reports-page .reports-browser-card { margin-top: 16px; }
             }
           `}</style>
 
-          <div style={{textAlign:'center'}}>
-            <h2 style={{marginTop:0}}>EXAM REPORTS</h2>
-            <p style={{color:'#8b8b8b'}}>{introText}</p>
-          </div>
+          <section className="reports-overview">
+            <div style={{textAlign:'center'}}>
+              <h2 style={{marginTop:0}}>EXAM REPORTS</h2>
+              <p style={{color:'#8b8b8b'}}>{introText}</p>
+            </div>
 
-          {canUpload && <div style={{maxWidth:960,margin:'18px auto 0',padding:'18px 20px',border:'1px dashed #cfd8df',borderRadius:12,background:'#f8fbfd'}}>
+            {canUpload && <div style={{maxWidth:960,margin:'18px auto 0',padding:'18px 20px',border:'1px dashed #cfd8df',borderRadius:12,background:'#f8fbfd'}}>
             <h3 style={{margin:'0 0 8px',fontSize:20,textAlign:'center'}}>Excel 資料アップロード</h3>
             <p style={{margin:'0 0 14px',color:'#666',textAlign:'center'}}>{reportLabel}の Excel ファイルをアップロードして一覧へ追加できます。</p>
             <form onSubmit={uploadExcel} style={{display:'flex',gap:12,alignItems:'center',justifyContent:'center',flexWrap:'wrap'}}>
@@ -174,13 +186,16 @@ export default function StaffReports(){
             </div>}
           </div>}
 
-          {canUpload && latestImport && <div style={{maxWidth:960,margin:'0 auto 18px',padding:'14px 20px',borderTop:'1px solid #dce5eb',color:'#425563',fontSize:14,lineHeight:1.7}}>
+            {canUpload && latestImport && <div style={{maxWidth:960,margin:'0 auto 18px',padding:'14px 20px',borderTop:'1px solid #dce5eb',color:'#425563',fontSize:14,lineHeight:1.7}}>
             <strong>最新アップロード状況</strong><br />
             アップロード日: {latestImport.uploadedAt}<br />
             最終データ: {reportDateLabel} {latestImport.report.date} / {latestImport.report.major === 'shinkyu' ? '鍼灸師学科' : '柔道整復師学科'} / {latestImport.report.company}
-          </div>}
+            </div>}
+          </section>
 
-          <ReportBrowser reports={reports} reportType={reportType} detailPath="/staff/report-detail" showClinicListGridPaper />
+          <section className="reports-browser-card">
+            <ReportBrowser reports={reports} reportType={reportType} detailPath="/staff/report-detail" showClinicListGridPaper />
+          </section>
         </div>
       </div>
     </div>
