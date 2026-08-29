@@ -139,7 +139,7 @@ export default function StaffReports(){
             最終データ: {reportDateLabel} {latestImport.report.date} / {latestImport.report.major === 'shinkyu' ? '鍼灸師学科' : '柔道整復師学科'} / {latestImport.report.company}
           </div>}
 
-          <ReportBrowser reports={reports} reportType={reportType} detailPath="/staff/report-detail" />
+          <ReportBrowser reports={reports} reportType={reportType} detailPath="/staff/report-detail" showClinicListGridPaper />
         </div>
       </div>
     </div>

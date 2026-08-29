@@ -7,13 +7,14 @@ type ReportBrowserProps = {
   reports: Report[]
   reportType?: string
   detailPath: string
+  showClinicListGridPaper?: boolean
 }
 
 function formatUpdatedDate(value?: string) {
   return value ? value.slice(0, 10) : '未設定'
 }
 
-export default function ReportBrowser({ reports, reportType, detailPath }: ReportBrowserProps) {
+export default function ReportBrowser({ reports, reportType, detailPath, showClinicListGridPaper = false }: ReportBrowserProps) {
   const [selectedRegion, setSelectedRegion] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [rankingSearchTerm, setRankingSearchTerm] = useState('')
@@ -124,6 +125,16 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
           border-radius: 16px;
           padding: 18px;
           box-shadow: 0 8px 24px rgba(7, 22, 28, 0.05);
+        }
+
+        .clinic-list.grid-paper {
+          padding-right: 48px;
+          padding-left: 48px;
+          background-color: #fcfcfc;
+          background-image:
+            linear-gradient(#e9edf0 1px, transparent 1px),
+            linear-gradient(90deg, #e9edf0 1px, transparent 1px);
+          background-size: 16px 16px;
         }
 
         .ranking {
@@ -281,6 +292,11 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
           .clinic-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
+
+          .clinic-list.grid-paper {
+            padding-right: 18px;
+            padding-left: 18px;
+          }
         }
       `}</style>
 
@@ -322,7 +338,7 @@ export default function ReportBrowser({ reports, reportType, detailPath }: Repor
         </form>
 
         <div className="layout">
-          <section className="clinic-list">
+          <section className={`clinic-list${showClinicListGridPaper ? ' grid-paper' : ''}`}>
             <h3 className="section-title">治療院一覧</h3>
             {groupedByPrefecture.length === 0 ? (
               <div className="empty">該当する報告書がありません</div>
