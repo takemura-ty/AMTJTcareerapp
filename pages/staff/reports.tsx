@@ -113,19 +113,33 @@ export default function StaffReports(){
             .staff-reports-page {
               min-height: 100%;
               background:
-                linear-gradient(135deg, rgba(0, 184, 241, 0.92), rgba(30, 105, 231, 0.88) 48%, rgba(117, 83, 224, 0.84)),
-                #dff5ff;
+                radial-gradient(ellipse 34% 10% at 8% 18%, rgba(255, 255, 255, 0.88) 0 22%, transparent 43%),
+                radial-gradient(ellipse 42% 13% at 22% 22%, rgba(255, 255, 255, 0.76) 0 19%, transparent 42%),
+                radial-gradient(ellipse 38% 12% at 83% 10%, rgba(255, 255, 255, 0.85) 0 20%, transparent 43%),
+                radial-gradient(ellipse 48% 14% at 76% 15%, rgba(255, 255, 255, 0.68) 0 18%, transparent 40%),
+                linear-gradient(180deg, #72d4f4 0%, #bdeeff 46%, #e7f8ff 100%);
               padding: 20px 0 32px;
             }
             .staff-reports-page .student-top {
               max-width: 1120px;
               margin: 0 auto 18px;
               padding: 16px 24px;
-              background: transparent;
             }
-            .staff-reports-page .student-top::after { display: none; }
             .staff-reports-page .student-top .header { max-width: none; padding: 0; }
             .staff-reports-page .student-top .header h2 { font-size: 26px; }
+            .staff-reports-page .button.logout {
+              display: inline-flex;
+              align-items: center;
+              gap: 7px;
+              padding: 9px 14px;
+              border: 1px solid rgba(0, 111, 163, 0.16);
+              border-radius: 999px;
+              box-shadow: 0 5px 14px rgba(0, 68, 107, 0.14);
+              font-weight: 700;
+              transition: transform 0.15s ease, box-shadow 0.15s ease;
+            }
+            .staff-reports-page .button.logout::before { content: '←'; font-size: 17px; line-height: 1; }
+            .staff-reports-page .button.logout:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(0, 68, 107, 0.2); }
             .staff-reports-page .container { max-width: 1120px; margin: 0 auto; }
             .staff-reports-page .card {
               background: rgba(255, 255, 255, 0.96);
