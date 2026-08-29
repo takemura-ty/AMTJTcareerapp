@@ -130,7 +130,7 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
         .clinic-list.grid-paper {
           padding-right: 48px;
           padding-left: 48px;
-          background-color: #fcfcfc;
+          background-color: #f3fbfe;
           background-image:
             linear-gradient(#e9edf0 1px, transparent 1px),
             linear-gradient(90deg, #e9edf0 1px, transparent 1px);
