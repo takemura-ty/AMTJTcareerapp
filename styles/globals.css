@@ -77,7 +77,7 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
 .student-top{background:var(--hinata-blue);padding:12px 16px;border-top-left-radius:8px;border-top-right-radius:8px;margin-bottom:18px;position:relative}
 .student-top::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:6px;background:linear-gradient(90deg,var(--brand-green),var(--brand-orange));border-bottom-left-radius:8px;border-bottom-right-radius:8px}
 .student-top .header{background:transparent;margin-bottom:0}
-.student-top .header h2{color:#fff;font-size:22px;font-weight:700;letter-spacing:0.4px}
+.student-top .header h2{color:#fff;font-size:28px;font-weight:700;letter-spacing:0.4px}
 .button.logout,.button.navigation-button{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border:1px solid #052f4f;border-radius:999px;background:#052f4f;color:#fff;font-weight:700;box-shadow:0 5px 14px rgba(0,46,79,.24);transition:transform .15s ease,box-shadow .15s ease,background .15s ease}
 .button.logout::before,.button.navigation-button::before{content:'←';font-size:17px;line-height:1}
 .button.logout:hover,.button.navigation-button:hover{transform:translateY(-1px);background:#07466f;box-shadow:0 8px 18px rgba(0,46,79,.3)}

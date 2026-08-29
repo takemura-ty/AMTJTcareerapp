@@ -103,7 +103,7 @@ export default function StaffReports(){
       <div className="student-top">
         <div className="header">
           <h2>{title}</h2>
-          <Link href="/staff" className="button logout">戻る</Link>
+          <Link href="/staff" className="button logout">ホームに戻る</Link>
         </div>
       </div>
 

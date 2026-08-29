@@ -86,7 +86,7 @@ export default function StaffWorkshops(){
     <div className="container">
       <div className="header">
         <h2>INFORMATION SESSION</h2>
-        <Link href="/staff" className="button navigation-button">戻る</Link>
+        <Link href="/staff" className="button navigation-button">ホームに戻る</Link>
       </div>
 
       <div className="card">
