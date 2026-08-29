@@ -234,24 +234,6 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
           flex: 0 0 18px;
         }
 
-        .back-button {
-          display: inline-flex;
-          align-items: center;
-          gap: 7px;
-          border: 1px solid #052f4f;
-          background: #052f4f;
-          border-radius: 999px;
-          padding: 9px 14px;
-          color: #fff;
-          text-decoration: none;
-          font-weight: 700;
-          box-shadow: 0 5px 14px rgba(0, 46, 79, 0.24);
-          transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-        }
-
-        .back-button::before { content: '←'; font-size: 17px; line-height: 1; }
-        .back-button:hover { transform: translateY(-1px); background: #07466f; box-shadow: 0 8px 18px rgba(0, 46, 79, 0.3); }
-
         .empty {
           color: #667784;
           text-align: center;
@@ -371,7 +353,7 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
         {!selectedClinic ? (
           <div className="empty">
             報告書が見つかりませんでした。<br />
-            <Link href={backHref} className="back-button" style={{ marginTop: 16 }}>一覧に戻る</Link>
+            <Link href={backHref} className="button logout" style={{ marginTop: 16 }}>一覧に戻る</Link>
           </div>
         ) : (
           <>
@@ -409,7 +391,7 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
                   </>
                 )}
               </div>
-              <Link href={backHref} className="back-button">一覧に戻る</Link>
+              <Link href={backHref} className="button logout">一覧に戻る</Link>
             </div>
 
             <div className="report-entries">
