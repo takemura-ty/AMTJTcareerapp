@@ -83,6 +83,12 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
 .button.logout:hover,.button.navigation-button:hover{transform:translateY(-1px);background:#07466f;box-shadow:0 8px 18px rgba(0,46,79,.3)}
 .login-cta .button{width:100%;padding:12px 16px;background:#052f4f;color:#fff;font-size:16px;font-weight:700;box-shadow:0 6px 14px rgba(0,46,79,.18)}
 .login-cta .button:hover{background:#07466f}
+.information-sessions-page{min-height:100%;background:radial-gradient(ellipse 34% 10% at 8% 18%,rgba(255,255,255,.88) 0 22%,transparent 43%),radial-gradient(ellipse 42% 13% at 22% 22%,rgba(255,255,255,.76) 0 19%,transparent 42%),radial-gradient(ellipse 38% 12% at 83% 10%,rgba(255,255,255,.85) 0 20%,transparent 43%),radial-gradient(ellipse 48% 14% at 76% 15%,rgba(255,255,255,.68) 0 18%,transparent 40%),linear-gradient(180deg,#72d4f4 0%,#bdeeff 46%,#e7f8ff 100%);padding:0 0 32px}
+.information-sessions-page .student-top{margin:0 0 18px;padding:16px;border-radius:0}
+.information-sessions-page .student-top .header{max-width:1120px;padding:0 16px}
+.information-sessions-page .student-top .header h2{font-size:26px}
+.information-sessions-page .container{max-width:1120px;margin:0 auto}
+.information-sessions-page .card{padding:28px;background:rgba(255,255,255,.96);box-shadow:0 18px 48px rgba(7,41,89,.2)}
 .panel{background:var(--card);border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 6px 18px rgba(7,22,28,0.04)}
 .panel h3{margin:0 0 8px}
 .panel .panel-row{display:flex;gap:8px;align-items:center}
@@ -143,6 +149,11 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
   .student-top{padding:8px 12px;margin-bottom:12px}
   .student-top .header{padding:8px 4px;align-items:center}
   .student-top .header h2{font-size:18px;margin:0}
+  .information-sessions-page{padding:0 0 20px}
+  .information-sessions-page .student-top{padding:12px 16px;margin-bottom:8px}
+  .information-sessions-page .student-top .header{padding:0 4px}
+  .information-sessions-page .student-top .header h2{font-size:20px}
+  .information-sessions-page .card{padding:16px}
   .announcement{margin:12px 0 20px}
   .announcement-list{gap:12px}
   .announcement-card{width:100%;box-sizing:border-box;padding:14px}

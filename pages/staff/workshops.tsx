@@ -83,13 +83,16 @@ export default function StaffWorkshops(){
   const current = items[idx]
 
   return (
-    <div className="container">
-      <div className="header">
-        <h2>INFORMATION SESSION</h2>
-        <Link href="/staff" className="button navigation-button">ホームに戻る</Link>
+    <div className="information-sessions-page">
+      <div className="student-top">
+        <div className="header">
+          <h2>INFORMATION SESSION</h2>
+          <Link href="/staff" className="button navigation-button">ホームに戻る</Link>
+        </div>
       </div>
 
-      <div className="card">
+      <div className="container">
+        <div className="card">
         {current && (
           <div style={{display:'flex',gap:12,alignItems:'center',flexDirection:'column'}}>
             <div className="workshop-preview">
@@ -160,6 +163,7 @@ export default function StaffWorkshops(){
               </article>
             </Fragment>
           ))}
+        </div>
         </div>
       </div>
     </div>

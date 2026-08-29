@@ -29,13 +29,16 @@ export default function Workshops(){
   const current = items[idx]
 
   return (
-    <div className="container">
-      <div className="header">
-        <h2>INFORMATION SESSION</h2>
-        <Link href="/student" className="button navigation-button">戻る</Link>
+    <div className="information-sessions-page">
+      <div className="student-top">
+        <div className="header">
+          <h2>INFORMATION SESSION</h2>
+          <Link href="/student" className="button navigation-button">戻る</Link>
+        </div>
       </div>
 
-      <div className="card">
+      <div className="container">
+        <div className="card">
         {current && (
           <div
             style={{display:'flex',gap:12,alignItems:'center',flexDirection:'column'}}
@@ -98,6 +101,7 @@ export default function Workshops(){
               {u.pdfUrl && <a className="button btn-blue" href={u.pdfUrl} target="_blank" rel="noreferrer">資料を開く</a>}
             </article>
           ))}
+        </div>
         </div>
       </div>
     </div>
