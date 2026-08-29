@@ -308,23 +308,42 @@ export default function ReportDetailView({ reports, reportType, clinicKey, backH
         }
 
         .summary-arrow {
-          color: #6f8290;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          border: 1px solid #00b8f1;
+          border-radius: 999px;
+          background: #00b8f1;
+          color: #fff;
+          padding: 7px 11px;
           font-size: 13px;
+          font-weight: 700;
+          box-shadow: 0 4px 10px rgba(0, 184, 241, 0.22);
         }
 
+        .summary-arrow::before { content: '⌄'; font-size: 15px; line-height: 1; }
+
         .delete-button {
-          border: 0;
-          background: transparent;
-          color: #ba3030;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          border: 1px solid #c92a2a;
+          border-radius: 999px;
+          background: #c92a2a;
+          color: #fff;
           cursor: pointer;
           font: inherit;
           font-size: 13px;
-          padding: 2px 4px;
+          font-weight: 700;
+          padding: 7px 11px;
+          box-shadow: 0 4px 10px rgba(201, 42, 42, 0.2);
+          transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
         }
 
         .delete-button:hover {
-          color: #8d1717;
-          text-decoration: underline;
+          transform: translateY(-1px);
+          background: #a91f1f;
+          box-shadow: 0 6px 14px rgba(201, 42, 42, 0.28);
         }
 
         .entry-body {
