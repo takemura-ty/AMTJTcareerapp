@@ -137,6 +137,20 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
           background-size: 16px 16px;
         }
 
+        .clinic-list.grid-paper .prefecture-block {
+          padding: 16px;
+          border: 1px solid rgba(207, 221, 230, 0.92);
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.92);
+          box-shadow: 0 5px 14px rgba(35, 74, 96, 0.06);
+        }
+
+        .clinic-list.grid-paper .prefecture-block + .prefecture-block {
+          margin-top: 16px;
+          padding-top: 16px;
+          border-top: 1px solid rgba(207, 221, 230, 0.92);
+        }
+
         .ranking {
           background: #fff8e8;
           border: 1px solid #efd7a5;
@@ -296,6 +310,10 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
           .clinic-list.grid-paper {
             padding-right: 18px;
             padding-left: 18px;
+          }
+
+          .clinic-list.grid-paper .prefecture-block {
+            padding: 12px;
           }
         }
       `}</style>
