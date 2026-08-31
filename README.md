@@ -9,10 +9,10 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000 and use the mock login to enter as `学生` or `職員`.
+Open http://localhost:3000 and use the configured student login or Supabase Auth staff login.
 
 Implemented:
-- Mock login (client-side)
+- Student login (server-verified session)
 - 学生ページ: 見学・面接報告書一覧, 勉強会案内, 報告書提出リンク
 - 職員ページ: 報告書一覧の Excel/CSV 一括更新と報告書一覧
 - API: `/api/reports`, `/api/workshops` returning Supabase data when configured, otherwise mock data
@@ -27,6 +27,9 @@ Supabase Setup
 NEXT_PUBLIC_SUPABASE_URL=your-project-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+STUDENT_LOGIN_ID=your-student-login-id
+STUDENT_LOGIN_PASSWORD=your-student-login-password
+STUDENT_SESSION_SECRET=a-long-random-secret
 ```
 
 3. Run the SQL in [supabase/schema.sql](supabase/schema.sql) inside the Supabase SQL Editor.

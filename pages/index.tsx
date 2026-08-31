@@ -41,6 +41,24 @@ export default function Home() {
       } finally {
         setIsSubmitting(false)
       }
+    } else {
+      setIsSubmitting(true)
+      try {
+        const response = await fetch('/api/student-auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ loginId: normalizedLoginId, password: normalizedPassword })
+        })
+        if (!response.ok) {
+          setError('学生IDまたはパスワードが正しくありません。')
+          return
+        }
+      } catch {
+        setError('学生ログインに失敗しました。')
+        return
+      } finally {
+        setIsSubmitting(false)
+      }
     }
 
     setError('')

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import DocumentPreview from '../../components/DocumentPreview'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
+import { requireStudentPage } from '../../lib/studentAuth'
 
 export default function Workshops(){
   const [items,setItems] = useState<InformationSession[]>([])
@@ -107,3 +108,5 @@ export default function Workshops(){
     </div>
   )
 }
+
+export const getServerSideProps = requireStudentPage

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
+import { requireStudentPage } from '../../lib/studentAuth'
 
 export default function Submit(){
   const [title,setTitle] = useState('')
@@ -53,3 +54,5 @@ export default function Submit(){
     </div>
   )
 }
+
+export const getServerSideProps = requireStudentPage

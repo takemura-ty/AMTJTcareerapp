@@ -5,6 +5,7 @@ import DocumentPreview from '../../components/DocumentPreview'
 import { JobHuntingTip, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 import { clearStoredUser, useRequireAuth } from '../../lib/auth'
+import { requireStudentPage } from '../../lib/studentAuth'
 
 type Workshop = { id:string; title:string; date:string; pdfUrl?:string }
 
@@ -47,7 +48,7 @@ export default function StudentIndex(){
         <div className="header">
           <h2>STUDENT PAGE</h2>
           <div>
-            <a className="button logout" onClick={()=>{clearStoredUser();router.push('/')}}>ログアウト</a>
+            <a className="button logout" onClick={async ()=>{await fetch('/api/student-auth', { method: 'DELETE' }); clearStoredUser(); router.push('/')}}>ログアウト</a>
           </div>
         </div>
       </div>
@@ -174,3 +175,5 @@ export default function StudentIndex(){
     </div>
   )
 }
+
+export const getServerSideProps = requireStudentPage

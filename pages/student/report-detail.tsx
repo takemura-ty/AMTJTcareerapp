@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import type { Report } from '../../lib/data'
 import ReportDetailView from '../../components/ReportDetailView'
+import { requireStudentPage } from '../../lib/studentAuth'
 
 export default function StudentReportDetail() {
   const [reports, setReports] = useState<Report[]>([])
@@ -43,3 +44,5 @@ export default function StudentReportDetail() {
     </div>
   )
 }
+
+export const getServerSideProps = requireStudentPage
