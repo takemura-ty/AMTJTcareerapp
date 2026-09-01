@@ -9,7 +9,7 @@ import { useRequireAuth } from '../../lib/auth'
 export default function StudentReportDetail() {
   const [reports, setReports] = useState<Report[]>([])
   const router = useRouter()
-  useRequireAuth(router, 'student')
+  useRequireAuth(router, ['student', 'staff'])
   const { type, clinic } = router.query
 
   useEffect(() => {

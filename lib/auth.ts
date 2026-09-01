@@ -34,7 +34,7 @@ export function getStoredUser(): StoredUser | null {
   }
 }
 
-export function useRequireAuth(router: NextRouter, role?: UserRole) {
+export function useRequireAuth(router: NextRouter, role?: UserRole | UserRole[]) {
   useEffect(() => {
     let cancelled = false
 
@@ -43,7 +43,8 @@ export function useRequireAuth(router: NextRouter, role?: UserRole) {
         const supabase = getSupabaseBrowserClient()
         const { data } = await supabase.auth.getSession()
         const currentRole = getUserRole(data.session?.user)
-        if (!cancelled && (!currentRole || (role && currentRole !== role))) {
+        const allowedRoles = role ? (Array.isArray(role) ? role : [role]) : undefined
+        if (!cancelled && (!currentRole || (allowedRoles && !allowedRoles.includes(currentRole)))) {
           clearStoredUser()
           router.replace('/')
         }

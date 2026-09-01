@@ -12,7 +12,7 @@ type Workshop = { id:string; title:string; date:string; pdfUrl?:string }
 
 export default function StudentIndex(){
   const router = useRouter()
-  useRequireAuth(router, 'student')
+  useRequireAuth(router, ['student', 'staff'])
   const [items,setItems] = useState<Workshop[]>([])
   const [idx,setIdx] = useState(0)
   const [tips, setTips] = useState<JobHuntingTip[]>(() => mergeJobHuntingTips(undefined))

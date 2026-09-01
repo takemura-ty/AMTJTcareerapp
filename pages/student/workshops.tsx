@@ -8,7 +8,7 @@ import { useRequireAuth } from '../../lib/auth'
 
 export default function Workshops(){
   const router = useRouter()
-  useRequireAuth(router, 'student')
+  useRequireAuth(router, ['student', 'staff'])
   const [items,setItems] = useState<InformationSession[]>([])
   const [idx,setIdx] = useState(0)
   const [touchStartX, setTouchStartX] = useState<number | null>(null)

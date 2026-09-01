@@ -8,7 +8,7 @@ export default function Submit(){
   const [desc,setDesc] = useState('')
   const [file,setFile] = useState<File|null>(null)
   const router = useRouter()
-  useRequireAuth(router, 'student')
+  useRequireAuth(router, ['student', 'staff'])
 
   const onFile = (e:any)=>{
     const f = e.target.files && e.target.files[0]
