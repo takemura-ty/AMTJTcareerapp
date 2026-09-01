@@ -89,7 +89,7 @@ export default function StudentIndex(){
 
           <div className="panel">
             <h3 style={{textAlign:'center',fontSize:22}}>SUBMIT A REPORT</h3>
-            <p style={{color:'#666',marginTop:8,textAlign:'center',maxWidth:680,marginLeft:'auto',marginRight:'auto'}}>該当するフォームを選んで報告してください。</p>
+            <p style={{color:'#666',marginTop:8,textAlign:'center',maxWidth:680,marginLeft:'auto',marginRight:'auto'}}>該当するフォームを選んで見学や面接の報告をしてください。</p>
 
             <div style={{display:'flex',gap:12,marginTop:12,flexWrap:'wrap'}}>
               <div style={{flex:1,minWidth:220}}>
@@ -139,7 +139,8 @@ export default function StudentIndex(){
                   setIdx((currentIdx) => (currentIdx + (distance > 0 ? 1 : sessions.length - 1)) % sessions.length)
                 }}
               >
-                <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
+                <div className="session-carousel">
+                  <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
                   {current.pdfUrl ? (
                     isImageAsset(current.pdfUrl) ? (
                       <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
@@ -149,6 +150,13 @@ export default function StudentIndex(){
                   ) : (
                     <div style={{padding:24}}><strong>{current.title}</strong></div>
                   )}
+                  </div>
+                  {sessions.length > 1 ? (
+                    <>
+                      <button type="button" className="carousel-arrow carousel-arrow-previous" aria-label="前の資料を表示" onClick={() => setIdx((currentIdx) => (currentIdx + sessions.length - 1) % sessions.length)}>←</button>
+                      <button type="button" className="carousel-arrow carousel-arrow-next" aria-label="次の資料を表示" onClick={() => setIdx((currentIdx) => (currentIdx + 1) % sessions.length)}>→</button>
+                    </>
+                  ) : null}
                 </div>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:12,gap:10}}>
                   <div className="session-summary">

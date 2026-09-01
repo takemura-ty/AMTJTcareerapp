@@ -235,7 +235,8 @@ export default function StaffIndex(){
                   setSessionIdx((currentIdx) => (currentIdx + (distance > 0 ? 1 : sessions.length - 1)) % sessions.length)
                 }}
               >
-                <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
+                <div className="session-carousel">
+                  <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
                   {currentSession.pdfUrl ? (
                     isImageAsset(currentSession.pdfUrl) ? (
                       <img src={currentSession.pdfUrl} alt={currentSession.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
@@ -245,6 +246,13 @@ export default function StaffIndex(){
                   ) : (
                     <div style={{padding:24}}><strong>{currentSession.title}</strong></div>
                   )}
+                  </div>
+                  {sessions.length > 1 ? (
+                    <>
+                      <button type="button" className="carousel-arrow carousel-arrow-previous" aria-label="前の資料を表示" onClick={() => setSessionIdx((currentIdx) => (currentIdx + sessions.length - 1) % sessions.length)}>←</button>
+                      <button type="button" className="carousel-arrow carousel-arrow-next" aria-label="次の資料を表示" onClick={() => setSessionIdx((currentIdx) => (currentIdx + 1) % sessions.length)}>→</button>
+                    </>
+                  ) : null}
                 </div>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:12,gap:10}}>
                   <div className="session-summary">

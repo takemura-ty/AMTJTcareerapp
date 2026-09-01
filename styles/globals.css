@@ -130,6 +130,11 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
 .workshop-edit-form{grid-column:1 / -1;display:grid;grid-template-columns:1fr 180px auto;gap:10px;padding:14px;border:1px solid #f0c58b;border-radius:8px;background:#fff8ed}
 .workshop-edit-form label{display:grid;gap:4px;font-size:13px;color:#56646f}
 .workshop-edit-actions{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
+.session-carousel{position:relative;width:100%;max-width:600px;margin:0 auto}
+.carousel-arrow{position:absolute;top:50%;z-index:1;width:40px;height:40px;padding:0;transform:translateY(-50%);border:0;border-radius:50%;background:rgba(5,47,79,.82);color:#fff;font-size:24px;line-height:1;cursor:pointer}
+.carousel-arrow:hover{background:#052f4f}
+.carousel-arrow-previous{left:12px}
+.carousel-arrow-next{right:12px}
 .carousel-dots{display:flex;gap:6px;justify-content:center;margin-top:8px}
 .carousel-dot{width:10px;height:10px;padding:0;border:0;border-radius:50%;background:#ddd;cursor:pointer;flex:0 0 10px}
 .carousel-dot[aria-pressed="true"]{background:#111}
@@ -182,6 +187,9 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
   .student-workshop-list{grid-template-columns:1fr}
   .workshop-edit-form{grid-template-columns:1fr}
   .workshop-edit-actions{align-items:center}
+  .carousel-arrow{width:36px;height:36px;font-size:21px}
+  .carousel-arrow-previous{left:8px}
+  .carousel-arrow-next{right:8px}
   .carousel-dots{justify-content:flex-start;max-width:100%;overflow-x:auto;padding:4px 2px;scroll-snap-type:x mandatory}
   .carousel-dot{scroll-snap-align:center}
   .report-grid{gap:12px}
