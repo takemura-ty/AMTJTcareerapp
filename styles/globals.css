@@ -20,7 +20,7 @@ a.button{background:var(--brand-orange);color:#fff;padding:8px 12px;border-radiu
 input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:100%;box-sizing:border-box}
 
 .career-side-mark{display:none}
-@media (min-width:1100px){
+@media (min-width:1360px){
   .career-side-mark{display:block;position:fixed;z-index:1;left:20px;top:0;width:124px;height:100vh;overflow:hidden;color:var(--hinata-blue);pointer-events:none}
   .career-side-mark::before{content:"";position:absolute;left:0;top:0;width:2px;height:100%;background:var(--hinata-blue)}
   .career-side-mark-track{position:absolute;left:24px;top:-30vh;display:flex;flex-direction:column;align-items:center;animation:career-side-scroll 30s linear infinite}
