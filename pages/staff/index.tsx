@@ -158,15 +158,6 @@ export default function StaffIndex(){
 
       <div className="container">
         <div className="card">
-          <div className="panel" style={{marginBottom:20}}>
-            <div style={{display:'flex',justifyContent:'space-between',gap:12,alignItems:'center',flexWrap:'wrap'}}>
-              <div>
-                <h3 style={{margin:0,fontSize:18}}>LOGIN HISTORY</h3>
-                <p style={{margin:'8px 0 0',fontSize:14,color:'#555'}}>学生・教職員のログイン履歴を確認できます。</p>
-              </div>
-              <Link href="/staff/login-history" className="button outline">ログイン履歴</Link>
-            </div>
-          </div>
           <div className="panel">
             <h3 style={{textAlign:'center',fontSize:22}}>REPORTS</h3>
             <p style={{color:'#666',marginTop:8,textAlign:'center',maxWidth:680,marginLeft:'auto',marginRight:'auto'}}>学生ページと同様に、見学報告書と面接報告書を確認できます。</p>
@@ -315,6 +306,15 @@ export default function StaffIndex(){
                 </form>
               </div>
             )}
+          </div>
+          <div className="panel" style={{marginBottom:20}}>
+            <div style={{display:'flex',justifyContent:'space-between',gap:12,alignItems:'center',flexWrap:'wrap'}}>
+              <div>
+                <h3 style={{margin:0,fontSize:18}}>LOGIN HISTORY</h3>
+                <p style={{margin:'8px 0 0',fontSize:14,color:'#555'}}>学生・教職員のログイン履歴を確認できます。</p>
+              </div>
+              <Link href="/staff/login-history" className="button outline">ログイン履歴</Link>
+            </div>
           </div>
         </div>
       </div>
