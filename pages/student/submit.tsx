@@ -1,13 +1,14 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
-import { requireStudentPage } from '../../lib/studentAuth'
+import { useRequireAuth } from '../../lib/auth'
 
 export default function Submit(){
   const [title,setTitle] = useState('')
   const [desc,setDesc] = useState('')
   const [file,setFile] = useState<File|null>(null)
   const router = useRouter()
+  useRequireAuth(router, 'student')
 
   const onFile = (e:any)=>{
     const f = e.target.files && e.target.files[0]
@@ -54,5 +55,3 @@ export default function Submit(){
     </div>
   )
 }
-
-export const getServerSideProps = requireStudentPage

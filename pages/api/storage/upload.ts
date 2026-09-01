@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSupabaseServerClient, isSupabaseWriteConfigured } from '../../../lib/supabase'
+import { requireApiRole } from '../../../lib/apiAuth'
 
 const STORAGE_BUCKET = 'career-files'
 const MAX_UPLOAD_BYTES = 4 * 1024 * 1024
@@ -52,15 +53,15 @@ async function ensureStorageBucket() {
 
     const { data: bucket, error: getBucketError } = await supabase.storage.getBucket(STORAGE_BUCKET)
     if (getBucketError) {
-      const { error: createBucketError } = await supabase.storage.createBucket(STORAGE_BUCKET, { public: true })
+      const { error: createBucketError } = await supabase.storage.createBucket(STORAGE_BUCKET, { public: false })
       if (createBucketError) {
         throw createBucketError
       }
       return
     }
 
-    if (!bucket.public) {
-      const { error: updateBucketError } = await supabase.storage.updateBucket(STORAGE_BUCKET, { public: true })
+    if (bucket.public) {
+      const { error: updateBucketError } = await supabase.storage.updateBucket(STORAGE_BUCKET, { public: false })
       if (updateBucketError) {
         throw updateBucketError
       }
@@ -76,6 +77,8 @@ async function ensureStorageBucket() {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (!await requireApiRole(req, res, ['staff'])) return
+
   if (!isSupabaseWriteConfigured()) {
     return res.status(503).json({ error: 'SUPABASE_SERVICE_ROLE_KEY が未設定です。' })
   }
@@ -120,8 +123,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       throw error
     }
 
-    const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path)
-    return res.status(200).json({ url: data.publicUrl })
+    return res.status(200).json({ url: path })
   } catch (error) {
     if (error instanceof Error && error.message === 'FILE_TOO_LARGE') {
       return res.status(413).json({ error: 'ファイルサイズは4MB以下にしてください。' })

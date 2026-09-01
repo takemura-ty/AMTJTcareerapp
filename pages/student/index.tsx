@@ -5,13 +5,14 @@ import DocumentPreview from '../../components/DocumentPreview'
 import { JobHuntingTip, mergeJobHuntingTips } from '../../lib/jobHuntingTips'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 import { clearStoredUser, useRequireAuth } from '../../lib/auth'
-import { requireStudentPage } from '../../lib/studentAuth'
+import { getSupabaseBrowserClient } from '../../lib/supabase-browser'
+import { authenticatedFetch } from '../../lib/apiClient'
 
 type Workshop = { id:string; title:string; date:string; pdfUrl?:string }
 
 export default function StudentIndex(){
   const router = useRouter()
-  useRequireAuth(router)
+  useRequireAuth(router, 'student')
   const [items,setItems] = useState<Workshop[]>([])
   const [idx,setIdx] = useState(0)
   const [tips, setTips] = useState<JobHuntingTip[]>(() => mergeJobHuntingTips(undefined))
@@ -19,7 +20,7 @@ export default function StudentIndex(){
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
 
   useEffect(()=>{
-    fetch('/api/workshops')
+    authenticatedFetch('/api/workshops')
       .then(r=>r.json())
       .then((base: Workshop[]) => {
         setItems(base)
@@ -28,7 +29,7 @@ export default function StudentIndex(){
   },[])
 
   useEffect(() => {
-    fetch('/api/job-hunting-tips')
+    authenticatedFetch('/api/job-hunting-tips')
       .then((r) => r.json())
       .then((data) => setTips(mergeJobHuntingTips(data)))
       .catch(() => setTips(mergeJobHuntingTips(undefined)))
@@ -48,7 +49,7 @@ export default function StudentIndex(){
         <div className="header">
           <h2>STUDENT PAGE</h2>
           <div>
-            <a className="button logout" onClick={async ()=>{await fetch('/api/student-auth', { method: 'DELETE' }); clearStoredUser(); router.push('/')}}>ログアウト</a>
+            <a className="button logout" onClick={async ()=>{try{await getSupabaseBrowserClient().auth.signOut()}catch{} clearStoredUser();router.push('/')}}>ログアウト</a>
           </div>
         </div>
       </div>
@@ -138,26 +139,24 @@ export default function StudentIndex(){
                   setIdx((currentIdx) => (currentIdx + (distance > 0 ? 1 : sessions.length - 1)) % sessions.length)
                 }}
               >
-                {current.pdfUrl ? (
-                  <a className="workshop-open-link preview-frame" href={current.pdfUrl} target="_blank" rel="noreferrer" aria-label={`${current.title}の資料を開く`} style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
-                    {isImageAsset(current.pdfUrl) ? (
+                <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
+                  {current.pdfUrl ? (
+                    isImageAsset(current.pdfUrl) ? (
                       <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                     ) : (
                       <DocumentPreview src={current.pdfUrl} title={current.title} />
-                    )}
-                  </a>
-                ) : (
-                  <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
+                    )
+                  ) : (
                     <div style={{padding:24}}><strong>{current.title}</strong></div>
-                  </div>
-                )}
+                  )}
+                </div>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:12,gap:10}}>
                   <div className="session-summary">
                     <strong className="session-title">{current.title}</strong>
                     <span className="session-date">{current.date} 開催</span>
                   </div>
                   <div>
-                    <Link href="/student/workshops" className="button btn-blue">その他勉強会案内はコチラ</Link>
+                    <Link href="/student/workshops" className="button btn-blue">詳しくはコチラ</Link>
                   </div>
                 </div>
                 <div className="carousel-dots" style={{marginTop:12}}>
@@ -175,5 +174,3 @@ export default function StudentIndex(){
     </div>
   )
 }
-
-export const getServerSideProps = requireStudentPage

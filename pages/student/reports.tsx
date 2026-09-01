@@ -3,16 +3,18 @@ import { useRouter } from 'next/router'
 import { Report } from '../../lib/data'
 import Link from 'next/link'
 import ReportBrowser from '../../components/ReportBrowser'
-import { requireStudentPage } from '../../lib/studentAuth'
+import { authenticatedFetch } from '../../lib/apiClient'
+import { useRequireAuth } from '../../lib/auth'
 
 export default function Reports(){
   const [reports,setReports] = useState<Report[]>([])
   const router = useRouter()
+  useRequireAuth(router, 'student')
 
   const { type } = router.query
 
   useEffect(()=>{
-    fetch('/api/reports').then(r=>r.json()).then(setReports)
+    authenticatedFetch('/api/reports').then(r=>r.json()).then(setReports)
   },[])
 
   const reportType = Array.isArray(type) ? type[0] : type
@@ -105,5 +107,3 @@ export default function Reports(){
     </div>
   )
 }
-
-export const getServerSideProps = requireStudentPage

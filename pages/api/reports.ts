@@ -4,6 +4,7 @@ import { Report } from '../../lib/data'
 import { deleteReport, getReports, importReports, ReportImportRow, ReportUpdate, updateReports } from '../../lib/repositories'
 import { normalizePrefecture } from '../../lib/reportGroups'
 import { isSupabaseConfigured, isSupabaseWriteConfigured } from '../../lib/supabase'
+import { requireApiRole } from '../../lib/apiAuth'
 
 const MAX_UPLOAD_BYTES = 4 * 1024 * 1024
 
@@ -195,6 +196,9 @@ function parseReportUpdate(value: unknown): ReportUpdate {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const requiredRoles = req.method === 'GET' ? ['student', 'staff'] as const : ['staff'] as const
+  if (!await requireApiRole(req, res, [...requiredRoles])) return
+
   if (req.method === 'GET') {
     const reports = await getReports()
     return res.status(200).json(reports)

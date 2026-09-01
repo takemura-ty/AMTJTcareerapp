@@ -3,12 +3,16 @@ import { deleteStorageFileIfNeeded } from '../../lib/storage'
 import { deleteJobHuntingTip, getJobHuntingTips, upsertJobHuntingTip } from '../../lib/repositories'
 import { defaultJobHuntingTips, JobHuntingTipKey } from '../../lib/jobHuntingTips'
 import { isSupabaseConfigured, isSupabaseWriteConfigured } from '../../lib/supabase'
+import { requireApiRole } from '../../lib/apiAuth'
 
 function getTipTitle(key: JobHuntingTipKey) {
   return defaultJobHuntingTips.find((tip) => tip.key === key)?.title || ''
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const requiredRoles = req.method === 'GET' ? ['student', 'staff'] as const : ['staff'] as const
+  if (!await requireApiRole(req, res, [...requiredRoles])) return
+
   if (req.method === 'GET') {
     const tips = await getJobHuntingTips()
     return res.status(200).json(tips)

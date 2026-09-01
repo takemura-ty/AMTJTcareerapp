@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { setStoredUser } from '../lib/auth'
 import { getSupabaseBrowserClient } from '../lib/supabase-browser'
+import { getUserRole } from '../lib/userRole'
 
 export default function Home() {
   const router = useRouter()
@@ -22,43 +23,24 @@ export default function Home() {
       return
     }
 
-    if(role === 'staff') {
-      setIsSubmitting(true)
-      try {
-        const supabase = getSupabaseBrowserClient()
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: normalizedLoginId,
-          password: normalizedPassword
-        })
+    setIsSubmitting(true)
+    try {
+      const supabase = getSupabaseBrowserClient()
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: normalizedLoginId,
+        password: normalizedPassword
+      })
 
-        if (signInError) {
-          setError('教員IDまたはパスワードが正しくありません。')
-          return
-        }
-      } catch {
-        setError('教員ログインに失敗しました。設定を確認してください。')
+      if (signInError || getUserRole(data.user) !== role) {
+        await supabase.auth.signOut()
+        setError(role === 'staff' ? '教員IDまたはパスワードが正しくありません。' : '学生IDまたはパスワードが正しくありません。')
         return
-      } finally {
-        setIsSubmitting(false)
       }
-    } else {
-      setIsSubmitting(true)
-      try {
-        const response = await fetch('/api/student-auth', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ loginId: normalizedLoginId, password: normalizedPassword })
-        })
-        if (!response.ok) {
-          setError('学生IDまたはパスワードが正しくありません。')
-          return
-        }
-      } catch {
-        setError('学生ログインに失敗しました。')
-        return
-      } finally {
-        setIsSubmitting(false)
-      }
+    } catch {
+      setError(role === 'staff' ? '教員ログインに失敗しました。設定を確認してください。' : '学生ログインに失敗しました。設定を確認してください。')
+      return
+    } finally {
+      setIsSubmitting(false)
     }
 
     setError('')

@@ -1,5 +1,7 @@
+import { authenticatedFetch } from './apiClient'
+
 async function ensureBlobUploadReady() {
-  const response = await fetch('/api/storage/upload')
+  const response = await authenticatedFetch('/api/storage/upload')
 
   if (!response.ok) {
     try {
@@ -17,7 +19,7 @@ async function ensureBlobUploadReady() {
 
 export async function uploadToStorage(pathPrefix: string, file: File) {
   await ensureBlobUploadReady()
-  const response = await fetch('/api/storage/upload', {
+  const response = await authenticatedFetch('/api/storage/upload', {
     method: 'POST',
     headers: {
       'Content-Type': file.type || 'application/octet-stream',

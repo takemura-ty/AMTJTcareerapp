@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Workshop } from '../lib/data'
+import { authenticatedFetch } from '../lib/apiClient'
 
 type Ann = {
   id: string
@@ -16,7 +17,7 @@ export default function Announcement(){
   const [anns,setAnns] = useState<Ann[]>([])
 
   useEffect(()=>{
-    fetch('/api/workshops').then(r=>r.json()).then(setWorkshops)
+    authenticatedFetch('/api/workshops').then(r=>r.json()).then(setWorkshops)
     try{
       const raw = localStorage.getItem('announcements')
       if(raw) setAnns(JSON.parse(raw))

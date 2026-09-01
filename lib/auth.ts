@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 import { NextRouter } from 'next/router'
 import { getSupabaseBrowserClient } from './supabase-browser'
+import { getUserRole, UserRole } from './userRole'
 
-export type UserRole = 'student' | 'staff'
+export type { UserRole } from './userRole'
 
 type StoredUser = {
   role: UserRole
@@ -38,26 +39,18 @@ export function useRequireAuth(router: NextRouter, role?: UserRole) {
     let cancelled = false
 
     async function checkAuth() {
-      const user = getStoredUser()
-
-      if (!user?.authenticated || (role && user.role !== role)) {
-        router.replace('/')
-        return
-      }
-
-      if (role === 'staff') {
-        try {
-          const supabase = getSupabaseBrowserClient()
-          const { data } = await supabase.auth.getSession()
-          if (!cancelled && !data.session) {
-            clearStoredUser()
-            router.replace('/')
-          }
-        } catch {
-          if (!cancelled) {
-            clearStoredUser()
-            router.replace('/')
-          }
+      try {
+        const supabase = getSupabaseBrowserClient()
+        const { data } = await supabase.auth.getSession()
+        const currentRole = getUserRole(data.session?.user)
+        if (!cancelled && (!currentRole || (role && currentRole !== role))) {
+          clearStoredUser()
+          router.replace('/')
+        }
+      } catch {
+        if (!cancelled) {
+          clearStoredUser()
+          router.replace('/')
         }
       }
     }

@@ -20,21 +20,6 @@ alter table public.reports add column if not exists clinic_impression text;
 alter table public.reports add column if not exists other_notes text;
 alter table public.reports add column if not exists interview_wish text;
 alter table public.reports add column if not exists advice text;
-alter table public.reports add column if not exists interviewer_count text;
-alter table public.reports add column if not exists interviewer text;
-alter table public.reports add column if not exists exam_contents text;
-alter table public.reports add column if not exists questions_asked text;
-alter table public.reports add column if not exists written_practical_exam text;
-alter table public.reports add column if not exists result text;
-alter table public.reports add column if not exists result_notification text;
-
-update public.reports
-set
-  interviewer = coalesce(interviewer, supervisor_impression),
-  exam_contents = coalesce(exam_contents, clinic_impression),
-  questions_asked = coalesce(questions_asked, staff_impression),
-  result = coalesce(result, interview_wish)
-where type = 'interview';
 
 create unique index if not exists reports_visit_company_date_major_key
 on public.reports (company, date, major)
@@ -52,8 +37,8 @@ alter table public.workshops add column if not exists file_name text;
 alter table public.workshops add column if not exists updated_at timestamptz not null default now();
 
 insert into storage.buckets (id, name, public)
-values ('career-files', 'career-files', true)
-on conflict (id) do update set public = true;
+values ('career-files', 'career-files', false)
+on conflict (id) do update set public = false;
 
 create table if not exists public.job_hunting_tips (
   key text primary key check (key in ('preparation', 'interview')),
@@ -68,19 +53,82 @@ alter table public.workshops enable row level security;
 alter table public.job_hunting_tips enable row level security;
 
 drop policy if exists "Public can read reports" on public.reports;
-create policy "Public can read reports"
-on public.reports for select
-using (true);
+drop policy if exists "Authenticated users can read reports" on public.reports;
+drop policy if exists "Staff can manage reports" on public.reports;
+create policy "Authenticated users can read reports"
+on public.reports for select to authenticated
+using (
+  (auth.jwt() ->> 'email') = 'amtjt@class.toyoiryo.ac.jp'
+  or (auth.jwt() -> 'app_metadata' ->> 'role') = 'staff'
+);
+create policy "Staff can manage reports"
+on public.reports for all to authenticated
+using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff')
+with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff');
 
 drop policy if exists "Public can read workshops" on public.workshops;
-create policy "Public can read workshops"
-on public.workshops for select
-using (true);
+drop policy if exists "Authenticated users can read workshops" on public.workshops;
+drop policy if exists "Staff can manage workshops" on public.workshops;
+create policy "Authenticated users can read workshops"
+on public.workshops for select to authenticated
+using (
+  (auth.jwt() ->> 'email') = 'amtjt@class.toyoiryo.ac.jp'
+  or (auth.jwt() -> 'app_metadata' ->> 'role') = 'staff'
+);
+create policy "Staff can manage workshops"
+on public.workshops for all to authenticated
+using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff')
+with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff');
 
 drop policy if exists "Public can read job hunting tips" on public.job_hunting_tips;
-create policy "Public can read job hunting tips"
-on public.job_hunting_tips for select
-using (true);
+drop policy if exists "Authenticated users can read job hunting tips" on public.job_hunting_tips;
+drop policy if exists "Staff can manage job hunting tips" on public.job_hunting_tips;
+create policy "Authenticated users can read job hunting tips"
+on public.job_hunting_tips for select to authenticated
+using (
+  (auth.jwt() ->> 'email') = 'amtjt@class.toyoiryo.ac.jp'
+  or (auth.jwt() -> 'app_metadata' ->> 'role') = 'staff'
+);
+create policy "Staff can manage job hunting tips"
+on public.job_hunting_tips for all to authenticated
+using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff')
+with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff');
+
+insert into public.reports (
+  id,
+  company,
+  sub_company,
+  region,
+  city,
+  type,
+  date,
+  major,
+  updated_at,
+  supervisor_impression,
+  staff_impression,
+  clinic_impression,
+  other_notes,
+  interview_wish,
+  advice
+)
+values
+  ('11111111-1111-1111-1111-111111111111', '田中治療院', '田中グループ', '東京', '新宿区', 'visit', '2026-04-10', 'shinkyu', '2026-04-20', '院長先生が穏やかで、質問にも具体的に答えてくださいました。', 'スタッフ同士の声掛けが多く、連携が取りやすい雰囲気でした。', '受付から施術室まで整理されていて、患者様への配慮が感じられました。', '見学中に物療機器の説明もしていただき、実際の運用を理解しやすかったです。', '面接を希望します。', '気になったことはその場で質問すると、働くイメージが持ちやすいです。'),
+  ('22222222-2222-2222-2222-222222222222', '鈴木整骨院', null, '大阪', '大阪市', 'interview', '2026-03-28', 'judo', '2026-04-20', '面接担当の先生が丁寧で、評価ポイントを明確に伝えてくださいました。', '学生への接し方が柔らかく、落ち着いて面接を受けられました。', '活気がありつつも清潔感があり、来院数の多さに納得しました。', '実技確認では基本手技の説明力も見られました。', '面接希望あり。', '自己紹介と志望動機は短く整理しておくと答えやすいです。'),
+  ('33333333-3333-3333-3333-333333333333', 'みらい治療院', 'みらいグループ', '東京', '立川市', 'visit', '2026-04-20', 'judo', '2026-04-20', '見学担当の先生が現場での役割を具体的に話してくださり理解しやすかったです。', '若手スタッフの方も積極的に話しかけてくださり、質問しやすかったです。', '院内が明るく、患者様との距離感も近い印象でした。', '受付業務から施術補助まで幅広い業務説明がありました。', '今のところ未定です。', '一日の流れを確認すると、自分が働く場面を想像しやすいです。'),
+  ('44444444-4444-4444-4444-444444444444', 'さくら治療院', null, '北海道', '札幌市', 'interview', '2026-02-12', 'shinkyu', '2026-02-15', '面接の進行が丁寧で、こちらの話を最後まで聞いてくださいました。', 'スタッフの方が明るく、面接前後も緊張を和らげてくださいました。', '地域密着型で患者様との信頼関係が強いと感じました。', '面接後に施設見学もあり、設備面まで確認できました。', '面接済みです。', '見学時の印象と面接時の質問内容をセットで振り返ると比較しやすいです。'),
+  ('55555555-5555-5555-5555-555555555555', '鈴木整骨院', null, '大阪', '大阪市', 'interview', '2026-04-18', 'shinkyu', '2026-04-20', '院長先生が教育体制を詳しく説明してくださり、入職後のイメージが湧きました。', 'スタッフ間の雰囲気が良く、新人の先生も意見を出しやすそうでした。', '駅から近く通勤しやすく、院内導線も分かりやすかったです。', '筆記よりも対話重視の面接でした。', '第一希望です。', '面接前に見学内容を振り返っておくと、志望理由につなげやすいです。'),
+  ('66666666-6666-6666-6666-666666666666', '神戸中央治療院', null, '兵庫', '神戸市', 'visit', '2026-04-15', 'judo', '2026-04-20', '見学担当の方が現場で必要な姿勢を具体例つきで説明してくださいました。', 'スタッフの皆さんが患者様への声掛けを大切にしている印象でした。', 'リハビリスペースが広く、チームで患者様を診る体制が整っていました。', '自費メニューの説明もあり、運営面も参考になりました。', '希望します。', '神戸市内でも院ごとに特色が違うので、複数比較するとよいです。')
+on conflict (id) do nothing;
+
+delete from public.reports
+where id in (
+  '11111111-1111-1111-1111-111111111111',
+  '22222222-2222-2222-2222-222222222222',
+  '33333333-3333-3333-3333-333333333333',
+  '44444444-4444-4444-4444-444444444444',
+  '55555555-5555-5555-5555-555555555555',
+  '66666666-6666-6666-6666-666666666666'
+);
 
 delete from public.workshops
 where (title, date) in (

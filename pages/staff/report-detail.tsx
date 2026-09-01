@@ -5,6 +5,7 @@ import type { Report } from '../../lib/data'
 import { useRequireAuth } from '../../lib/auth'
 import ReportDetailView from '../../components/ReportDetailView'
 import { getClinicKey } from '../../lib/reportGroups'
+import { authenticatedFetch } from '../../lib/apiClient'
 
 export default function StaffReportDetail() {
   const [reports, setReports] = useState<Report[]>([])
@@ -14,11 +15,11 @@ export default function StaffReportDetail() {
   const { type, clinic } = router.query
 
   useEffect(() => {
-    fetch('/api/reports').then(response => response.json()).then(setReports)
+    authenticatedFetch('/api/reports').then(response => response.json()).then(setReports)
   }, [])
 
   async function updateReports(ids: string[], update: Record<string, string>) {
-    const response = await fetch('/api/reports', {
+    const response = await authenticatedFetch('/api/reports', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ids, update })
@@ -28,7 +29,7 @@ export default function StaffReportDetail() {
       throw new Error(data.error || '報告書を更新できませんでした。')
     }
 
-    const updatedReports = await fetch('/api/reports').then(result => result.json())
+    const updatedReports = await authenticatedFetch('/api/reports').then(result => result.json())
     setReports(updatedReports)
     if (update.company !== undefined || update.region !== undefined || update.city !== undefined) {
       router.replace({
@@ -46,7 +47,7 @@ export default function StaffReportDetail() {
   }
 
   async function deleteReport(id: string) {
-    const response = await fetch('/api/reports', {
+    const response = await authenticatedFetch('/api/reports', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id })
@@ -56,7 +57,7 @@ export default function StaffReportDetail() {
       throw new Error(data.error || '報告書を削除できませんでした。')
     }
 
-    const updatedReports = await fetch('/api/reports').then(result => result.json())
+    const updatedReports = await authenticatedFetch('/api/reports').then(result => result.json())
     setReports(updatedReports)
   }
 

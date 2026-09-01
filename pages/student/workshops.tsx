@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import DocumentPreview from '../../components/DocumentPreview'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
-import { requireStudentPage } from '../../lib/studentAuth'
+import { authenticatedFetch } from '../../lib/apiClient'
+import { useRequireAuth } from '../../lib/auth'
 
 export default function Workshops(){
+  const router = useRouter()
+  useRequireAuth(router, 'student')
   const [items,setItems] = useState<InformationSession[]>([])
   const [idx,setIdx] = useState(0)
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
 
   useEffect(()=>{
-    fetch('/api/workshops')
+    authenticatedFetch('/api/workshops')
       .then(r=>r.json())
       .then(setItems)
   },[])
@@ -108,5 +112,3 @@ export default function Workshops(){
     </div>
   )
 }
-
-export const getServerSideProps = requireStudentPage

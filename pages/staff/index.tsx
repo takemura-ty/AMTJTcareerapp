@@ -7,6 +7,7 @@ import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 import { uploadToStorage } from '../../lib/blobUpload'
 import { clearStoredUser, useRequireAuth } from '../../lib/auth'
 import { getSupabaseBrowserClient } from '../../lib/supabase-browser'
+import { authenticatedFetch } from '../../lib/apiClient'
 
 export default function StaffIndex(){
   const router = useRouter()
@@ -22,14 +23,14 @@ export default function StaffIndex(){
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
 
   useEffect(() => {
-    fetch('/api/job-hunting-tips')
+    authenticatedFetch('/api/job-hunting-tips')
       .then((r) => r.json())
       .then((data) => setTips(mergeJobHuntingTips(data)))
       .catch(() => setTips(mergeJobHuntingTips(undefined)))
   }, [])
 
   useEffect(() => {
-    fetch('/api/workshops')
+    authenticatedFetch('/api/workshops')
       .then((r) => r.json())
       .then((base) => setSessions(base))
       .catch(() => setSessions([]))
@@ -64,7 +65,7 @@ export default function StaffIndex(){
     setIsSavingTip(key)
     try {
       const blob = await uploadToStorage('job-hunting-tips', file)
-      const response = await fetch('/api/job-hunting-tips', {
+      const response = await authenticatedFetch('/api/job-hunting-tips', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key, pdfUrl: blob.url, fileName: file.name })
@@ -87,7 +88,7 @@ export default function StaffIndex(){
 
   async function clearTip(key: JobHuntingTipKey){
     try {
-      const response = await fetch(`/api/job-hunting-tips?key=${key}`, { method: 'DELETE' })
+      const response = await authenticatedFetch(`/api/job-hunting-tips?key=${key}`, { method: 'DELETE' })
       if (!response.ok) {
         throw new Error(await getResponseError(response, 'JOB HUNTING TIPS の削除に失敗しました。'))
       }
@@ -118,7 +119,7 @@ export default function StaffIndex(){
     setIsSavingSession(true)
     try {
       const blob = await uploadToStorage('information-sessions', sessionFile)
-      const response = await fetch('/api/workshops', {
+      const response = await authenticatedFetch('/api/workshops', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: sessionTitle, date: sessionDate, pdfUrl: blob.url, fileName: sessionFile.name })
@@ -234,19 +235,17 @@ export default function StaffIndex(){
                   setSessionIdx((currentIdx) => (currentIdx + (distance > 0 ? 1 : sessions.length - 1)) % sessions.length)
                 }}
               >
-                {currentSession.pdfUrl ? (
-                  <a className="workshop-open-link preview-frame" href={currentSession.pdfUrl} target="_blank" rel="noreferrer" aria-label={`${currentSession.title}の資料を開く`} style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
-                    {isImageAsset(currentSession.pdfUrl) ? (
+                <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
+                  {currentSession.pdfUrl ? (
+                    isImageAsset(currentSession.pdfUrl) ? (
                       <img src={currentSession.pdfUrl} alt={currentSession.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                     ) : (
                       <DocumentPreview src={currentSession.pdfUrl} title={currentSession.title} />
-                    )}
-                  </a>
-                ) : (
-                  <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
+                    )
+                  ) : (
                     <div style={{padding:24}}><strong>{currentSession.title}</strong></div>
-                  </div>
-                )}
+                  )}
+                </div>
                 <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginTop:12,gap:10}}>
                   <div className="session-summary">
                     <strong className="session-title">{currentSession.title}</strong>

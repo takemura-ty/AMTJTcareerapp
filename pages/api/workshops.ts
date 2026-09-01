@@ -2,8 +2,12 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { deleteStorageFileIfNeeded } from '../../lib/storage'
 import { createWorkshop, deleteWorkshop, getWorkshops, updateWorkshop } from '../../lib/repositories'
 import { isSupabaseConfigured, isSupabaseWriteConfigured } from '../../lib/supabase'
+import { requireApiRole } from '../../lib/apiAuth'
 
 export default async function handler(_req: NextApiRequest, res: NextApiResponse) {
+  const requiredRoles = _req.method === 'GET' ? ['student', 'staff'] as const : ['staff'] as const
+  if (!await requireApiRole(_req, res, [...requiredRoles])) return
+
   if (_req.method === 'GET') {
     const workshops = await getWorkshops()
     return res.status(200).json(workshops)

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Report } from '../../lib/data'
 import { useRequireAuth } from '../../lib/auth'
 import ReportBrowser from '../../components/ReportBrowser'
+import { authenticatedFetch } from '../../lib/apiClient'
 
 export default function StaffReports(){
   const [reports, setReports] = useState<Report[]>([])
@@ -15,7 +16,7 @@ export default function StaffReports(){
   const { type } = router.query
 
   useEffect(() => {
-    fetch('/api/reports').then(r => r.json()).then(setReports)
+    authenticatedFetch('/api/reports').then(r => r.json()).then(setReports)
   }, [])
 
   async function uploadExcel(e: React.FormEvent<HTMLFormElement>){
@@ -36,7 +37,7 @@ export default function StaffReports(){
     setIsUploading(true)
     setUploadResult(null)
     try {
-      const response = await fetch('/api/reports', {
+      const response = await authenticatedFetch('/api/reports', {
         method: 'POST',
         headers: {
           'Content-Type': file.type || 'application/octet-stream',
@@ -55,7 +56,7 @@ export default function StaffReports(){
         throw new Error(data.error || `アップロードに失敗しました（HTTP ${response.status}）。`)
       }
 
-      const updatedReports = await fetch('/api/reports').then((result) => result.json())
+      const updatedReports = await authenticatedFetch('/api/reports').then((result) => result.json())
       setReports(updatedReports)
       form.reset()
       setUploadResult({

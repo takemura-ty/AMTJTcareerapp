@@ -2,6 +2,7 @@ import { Report, Workshop, workshops as mockWorkshops } from './data'
 import { defaultJobHuntingTips, JobHuntingTip, JobHuntingTipKey, mergeJobHuntingTips } from './jobHuntingTips'
 import { normalizePrefecture } from './reportGroups'
 import { getSupabaseServerClient, isSupabaseConfigured } from './supabase'
+import { createSignedStorageUrl } from './storage'
 
 type ReportRow = {
   id: string
@@ -97,6 +98,16 @@ function mapJobHuntingTipRow(row: JobHuntingTipRow): JobHuntingTip {
     fileName: row.file_name || undefined,
     updatedAt: row.updated_at || undefined
   }
+}
+
+async function mapWorkshopRowWithSignedUrl(row: WorkshopRow): Promise<Workshop> {
+  const workshop = mapWorkshopRow(row)
+  return { ...workshop, pdfUrl: await createSignedStorageUrl(row.pdf_url) }
+}
+
+async function mapJobHuntingTipRowWithSignedUrl(row: JobHuntingTipRow): Promise<JobHuntingTip> {
+  const tip = mapJobHuntingTipRow(row)
+  return { ...tip, pdfUrl: await createSignedStorageUrl(row.blob_url) }
 }
 
 export async function getReports() {
@@ -329,9 +340,8 @@ export async function getWorkshops() {
     return mockWorkshops
   }
 
-  return data
-    .map(mapWorkshopRow)
-    .filter((workshop) => !mockWorkshopKeys.has(`${workshop.title}|${workshop.date}`))
+  const workshops = await Promise.all(data.map(mapWorkshopRowWithSignedUrl))
+  return workshops.filter((workshop) => !mockWorkshopKeys.has(`${workshop.title}|${workshop.date}`))
 }
 
 export async function createWorkshop(input: { title: string; date: string; pdfUrl: string; fileName?: string }) {
@@ -359,7 +369,7 @@ export async function createWorkshop(input: { title: string; date: string; pdfUr
     throw error || new Error('Failed to create workshop')
   }
 
-  return mapWorkshopRow(data)
+  return mapWorkshopRowWithSignedUrl(data)
 }
 
 export async function updateWorkshop(id: string, input: { title: string; date: string }) {
@@ -383,7 +393,7 @@ export async function updateWorkshop(id: string, input: { title: string; date: s
     throw error || new Error('Failed to update workshop')
   }
 
-  return mapWorkshopRow(data)
+  return mapWorkshopRowWithSignedUrl(data)
 }
 
 export async function deleteWorkshop(id: string) {
@@ -403,7 +413,7 @@ export async function deleteWorkshop(id: string) {
     throw error
   }
 
-  return data ? mapWorkshopRow(data) : null
+  return data ? mapWorkshopRowWithSignedUrl(data) : null
 }
 
 export async function getJobHuntingTips() {
@@ -425,7 +435,7 @@ export async function getJobHuntingTips() {
     return defaultJobHuntingTips
   }
 
-  return mergeJobHuntingTips(data.map(mapJobHuntingTipRow))
+  return mergeJobHuntingTips(await Promise.all(data.map(mapJobHuntingTipRowWithSignedUrl)))
 }
 
 export async function upsertJobHuntingTip(input: { key: JobHuntingTipKey; title: string; pdfUrl: string; fileName?: string }) {
@@ -452,7 +462,7 @@ export async function upsertJobHuntingTip(input: { key: JobHuntingTipKey; title:
     throw error || new Error('Failed to upsert job hunting tip')
   }
 
-  return mapJobHuntingTipRow(data)
+  return mapJobHuntingTipRowWithSignedUrl(data)
 }
 
 export async function deleteJobHuntingTip(key: JobHuntingTipKey) {
@@ -472,5 +482,5 @@ export async function deleteJobHuntingTip(key: JobHuntingTipKey) {
     throw error
   }
 
-  return data ? mapJobHuntingTipRow(data) : null
+  return data ? mapJobHuntingTipRowWithSignedUrl(data) : null
 }

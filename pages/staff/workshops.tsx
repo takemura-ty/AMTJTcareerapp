@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import DocumentPreview from '../../components/DocumentPreview'
 import { InformationSession, isImageAsset } from '../../lib/informationSessions'
 import { useRequireAuth } from '../../lib/auth'
+import { authenticatedFetch } from '../../lib/apiClient'
 
 export default function StaffWorkshops(){
   const router = useRouter()
@@ -16,7 +17,7 @@ export default function StaffWorkshops(){
   const [isSavingEdit, setIsSavingEdit] = useState(false)
 
   useEffect(()=>{
-    fetch('/api/workshops')
+    authenticatedFetch('/api/workshops')
       .then(r=>r.json())
       .then(setItems)
   },[])
@@ -32,7 +33,7 @@ export default function StaffWorkshops(){
   async function removeWorkshop(id: string) {
     if (!window.confirm('この資料を削除しますか？')) return
 
-    const response = await fetch(`/api/workshops?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+    const response = await authenticatedFetch(`/api/workshops?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
     if (!response.ok) {
       alert('資料の削除に失敗しました。')
       return
@@ -58,7 +59,7 @@ export default function StaffWorkshops(){
 
     setIsSavingEdit(true)
     try {
-      const response = await fetch(`/api/workshops?id=${encodeURIComponent(editingId)}`, {
+      const response = await authenticatedFetch(`/api/workshops?id=${encodeURIComponent(editingId)}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: editTitle, date: editDate })
