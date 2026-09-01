@@ -97,6 +97,13 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
 .btn-acu{background:var(--brand-orange)}
 .btn-judo{background:var(--brand-green)}
 .btn-blue{background:var(--hinata-blue);color:#fff}
+.staff-login-history-page{min-height:100%;background:#f7f7f8;padding-bottom:32px}
+.staff-login-history-page .student-top{margin:0 0 18px;border-radius:0}
+.staff-login-history-page .container{max-width:900px;margin:0 auto}
+.login-history-list{margin-top:16px;border-top:1px solid #e6e6e6}
+.login-history-entry{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid #ededed}
+.login-history-entry time{color:#555;text-align:right}
+.login-history-error{color:#b42318}
 
 /* ensure button + modifier specificity overrides a.button */
 .button.btn-acu{background:var(--brand-orange) !important;color:#fff !important}
@@ -166,6 +173,8 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ddd;width:
   .panel .panel-row{align-items:stretch;flex-direction:column}
   .panel .panel-actions{flex-direction:column}
   .panel .panel-actions .button{width:100%;box-sizing:border-box;text-align:center}
+  .login-history-entry{align-items:flex-start;flex-direction:column;gap:4px}
+  .login-history-entry time{text-align:left}
   .session-title{font-size:16px}
   .workshop-summary,.workshop-item{align-items:stretch;flex-direction:column}
   .workshop-item .button{align-self:flex-start}
