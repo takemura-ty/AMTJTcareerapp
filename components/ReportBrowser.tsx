@@ -100,19 +100,23 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
 
         .region-select {
           width: min(260px, 100%);
+          min-height: 44px;
           padding: 10px 12px;
           border-radius: 10px;
           border: 1px solid #d7e0e7;
           background: #fff;
+          font-size: 16px;
         }
 
         .search-input {
           width: min(320px, 100%);
+          min-height: 44px;
           padding: 10px 12px;
           border-radius: 10px;
           border: 1px solid #d7e0e7;
           background: #fff;
           box-sizing: border-box;
+          font-size: 16px;
         }
 
         .layout {
