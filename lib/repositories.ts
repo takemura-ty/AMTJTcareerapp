@@ -264,17 +264,22 @@ export async function importReports(reports: ReportImportRow[], type: Report['ty
 
   const { data: existingReports, error: selectError } = await supabase
     .from('reports')
-    .select('company, date, major')
+    .select('supervisor_impression, questions_asked')
     .eq('type', type)
 
   if (selectError) {
     throw selectError
   }
 
-  const reportKey = (report: Pick<Report, 'company' | 'date' | 'major'>) => `${report.company}\u0000${report.date}\u0000${report.major}`
-  const existingKeys = new Set((existingReports || []).map(reportKey))
+  const importedReportKey = (report: ReportImportRow) => type === 'visit'
+    ? report.supervisorImpression.trim()
+    : report.questionsAsked.trim()
+  const existingReportKey = (report: { supervisor_impression: string | null; questions_asked: string | null }) => type === 'visit'
+    ? (report.supervisor_impression || '').trim()
+    : (report.questions_asked || '').trim()
+  const existingKeys = new Set((existingReports || []).map(existingReportKey))
   const newReports = reports.filter((report) => {
-    const key = reportKey(report)
+    const key = importedReportKey(report)
     if (existingKeys.has(key)) {
       return false
     }

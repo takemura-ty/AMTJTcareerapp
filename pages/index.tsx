@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { setStoredUser } from '../lib/auth'
 import { getSupabaseBrowserClient } from '../lib/supabase-browser'
 import { getUserRole } from '../lib/userRole'
+import { authenticatedFetch } from '../lib/apiClient'
 
 export default function Home() {
   const router = useRouter()
@@ -45,6 +46,12 @@ export default function Home() {
       return
     } finally {
       setIsSubmitting(false)
+    }
+
+    try {
+      await authenticatedFetch('/api/login-history', { method: 'POST' })
+    } catch {
+      // A login remains valid if audit logging is temporarily unavailable.
     }
 
     setError('')

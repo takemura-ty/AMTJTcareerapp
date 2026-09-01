@@ -8,6 +8,7 @@ import { uploadToStorage } from '../../lib/blobUpload'
 import { clearStoredUser, useRequireAuth } from '../../lib/auth'
 import { getSupabaseBrowserClient } from '../../lib/supabase-browser'
 import { authenticatedFetch } from '../../lib/apiClient'
+import type { LoginHistoryEntry } from '../../lib/loginHistory'
 
 export default function StaffIndex(){
   const router = useRouter()
@@ -21,6 +22,8 @@ export default function StaffIndex(){
   const [isSavingTip, setIsSavingTip] = useState<JobHuntingTipKey | null>(null)
   const [isSavingSession, setIsSavingSession] = useState(false)
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
+  const [loginHistory, setLoginHistory] = useState<LoginHistoryEntry[]>([])
+  const [isLoginHistoryOpen, setIsLoginHistoryOpen] = useState(false)
 
   useEffect(() => {
     authenticatedFetch('/api/job-hunting-tips')
@@ -34,6 +37,13 @@ export default function StaffIndex(){
       .then((r) => r.json())
       .then((base) => setSessions(base))
       .catch(() => setSessions([]))
+  }, [])
+
+  useEffect(() => {
+    authenticatedFetch('/api/login-history')
+      .then((response) => response.ok ? response.json() : [])
+      .then((data) => setLoginHistory(Array.isArray(data) ? data : []))
+      .catch(() => setLoginHistory([]))
   }, [])
 
   useEffect(() => {
@@ -146,6 +156,9 @@ export default function StaffIndex(){
   }
 
   const currentSession = sessions[sessionIdx]
+  const formatLoginTime = (value?: string) => value ? new Date(value).toLocaleString('ja-JP') : '履歴なし'
+  const latestStudentLogin = loginHistory.find((entry) => entry.role === 'student')
+  const latestStaffLogin = loginHistory.find((entry) => entry.role === 'staff')
 
   return (
     <div>
@@ -158,6 +171,30 @@ export default function StaffIndex(){
 
       <div className="container">
         <div className="card">
+          <div className="panel" style={{marginBottom:20}}>
+            <div style={{display:'flex',justifyContent:'space-between',gap:12,alignItems:'center',flexWrap:'wrap'}}>
+              <div>
+                <h3 style={{margin:0,fontSize:18}}>LOGIN HISTORY</h3>
+                <div style={{display:'grid',gap:4,marginTop:10,fontSize:14,color:'#555'}}>
+                  <span>学生: {formatLoginTime(latestStudentLogin?.logged_in_at)}</span>
+                  <span>教員: {formatLoginTime(latestStaffLogin?.logged_in_at)}</span>
+                </div>
+              </div>
+              <button type="button" className="button outline" onClick={() => setIsLoginHistoryOpen((open) => !open)}>
+                {isLoginHistoryOpen ? '閉じる' : '詳細'}
+              </button>
+            </div>
+            {isLoginHistoryOpen ? (
+              <div style={{marginTop:16,borderTop:'1px solid #e6e6e6',paddingTop:12,maxHeight:280,overflowY:'auto'}}>
+                {loginHistory.length ? loginHistory.map((entry) => (
+                  <div key={entry.id} style={{display:'flex',justifyContent:'space-between',gap:12,padding:'8px 0',borderBottom:'1px solid #f0f0f0',fontSize:14}}>
+                    <span>{entry.role === 'student' ? '学生' : '教員'}</span>
+                    <time dateTime={entry.logged_in_at}>{formatLoginTime(entry.logged_in_at)}</time>
+                  </div>
+                )) : <div style={{fontSize:14,color:'#666'}}>ログイン履歴はありません</div>}
+              </div>
+            ) : null}
+          </div>
           <div className="panel">
             <h3 style={{textAlign:'center',fontSize:22}}>REPORTS</h3>
             <p style={{color:'#666',marginTop:8,textAlign:'center',maxWidth:680,marginLeft:'auto',marginRight:'auto'}}>学生ページと同様に、見学報告書と面接報告書を確認できます。</p>

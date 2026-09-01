@@ -20,10 +20,15 @@ alter table public.reports add column if not exists clinic_impression text;
 alter table public.reports add column if not exists other_notes text;
 alter table public.reports add column if not exists interview_wish text;
 alter table public.reports add column if not exists advice text;
+alter table public.reports add column if not exists interviewer_count text;
+alter table public.reports add column if not exists interviewer text;
+alter table public.reports add column if not exists exam_contents text;
+alter table public.reports add column if not exists questions_asked text;
+alter table public.reports add column if not exists written_practical_exam text;
+alter table public.reports add column if not exists result text;
+alter table public.reports add column if not exists result_notification text;
 
-create unique index if not exists reports_visit_company_date_major_key
-on public.reports (company, date, major)
-where type = 'visit';
+drop index if exists public.reports_visit_company_date_major_key;
 
 create table if not exists public.workshops (
   id uuid primary key default gen_random_uuid(),
@@ -48,9 +53,16 @@ create table if not exists public.job_hunting_tips (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.login_history (
+  id uuid primary key default gen_random_uuid(),
+  role text not null check (role in ('student', 'staff')),
+  logged_in_at timestamptz not null default now()
+);
+
 alter table public.reports enable row level security;
 alter table public.workshops enable row level security;
 alter table public.job_hunting_tips enable row level security;
+alter table public.login_history enable row level security;
 
 drop policy if exists "Public can read reports" on public.reports;
 drop policy if exists "Authenticated users can read reports" on public.reports;
@@ -65,6 +77,11 @@ create policy "Staff can manage reports"
 on public.reports for all to authenticated
 using ((auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp')
 with check ((auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp');
+
+drop policy if exists "Staff can read login history" on public.login_history;
+create policy "Staff can read login history"
+on public.login_history for select to authenticated
+using ((auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp');
 
 drop policy if exists "Public can read workshops" on public.workshops;
 drop policy if exists "Authenticated users can read workshops" on public.workshops;
