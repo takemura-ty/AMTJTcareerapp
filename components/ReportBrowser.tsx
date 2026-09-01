@@ -20,8 +20,6 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
   const [selectedMajor, setSelectedMajor] = useState('')
   const [selectedYear, setSelectedYear] = useState('')
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('')
-  const [appliedMajor, setAppliedMajor] = useState('')
-  const [appliedYear, setAppliedYear] = useState('')
   const router = useRouter()
 
   function openClinicDetail(clinicKey: string) {
@@ -31,7 +29,7 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
   const availableYears = useMemo(() => (
     reports
       .filter(report => (reportType ? report.type === reportType : true))
-      .map(report => (report.updatedAt || report.date).slice(0, 4))
+      .map(report => report.date.slice(0, 4))
       .filter((year, index, years) => year && years.indexOf(year) === index)
       .sort((left, right) => right.localeCompare(left))
   ), [reportType, reports])
@@ -40,10 +38,10 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
     reports
       .filter(report => (reportType ? report.type === reportType : true))
       .filter(report => (selectedRegion ? report.region === selectedRegion : true))
-      .filter(report => (appliedMajor ? report.major === appliedMajor : true))
-      .filter(report => (appliedYear ? (report.updatedAt || report.date).startsWith(appliedYear) : true))
+      .filter(report => (selectedMajor ? report.major === selectedMajor : true))
+      .filter(report => (selectedYear ? report.date.startsWith(selectedYear) : true))
       .sort((left, right) => right.date.localeCompare(left.date))
-  ), [appliedMajor, appliedYear, reportType, reports, selectedRegion])
+  ), [reportType, reports, selectedMajor, selectedRegion, selectedYear])
 
   function filterBySearchTerm(sourceReports: Report[], value: string) {
     const normalizedSearchTerm = value.trim().toLocaleLowerCase('ja-JP')
@@ -365,8 +363,6 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
         <form className="toolbar" onSubmit={event => {
           event.preventDefault()
           setAppliedSearchTerm(searchTerm)
-          setAppliedMajor(selectedMajor)
-          setAppliedYear(selectedYear)
         }}>
           <select className="filter-select" value={selectedRegion} onChange={event => setSelectedRegion(event.target.value)}>
             <option value="">すべての都道府県</option>
