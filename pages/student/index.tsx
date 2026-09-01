@@ -143,9 +143,9 @@ export default function StudentIndex(){
                   <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
                   {current.pdfUrl ? (
                     isImageAsset(current.pdfUrl) ? (
-                      <img src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
+                      <img key={current.id} src={current.pdfUrl} alt={current.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                     ) : (
-                      <DocumentPreview src={current.pdfUrl} title={current.title} />
+                      <DocumentPreview key={current.id} src={current.pdfUrl} title={current.title} />
                     )
                   ) : (
                     <div style={{padding:24}}><strong>{current.title}</strong></div>

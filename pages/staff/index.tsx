@@ -239,9 +239,9 @@ export default function StaffIndex(){
                   <div className="preview-frame" style={{marginLeft:'auto',marginRight:'auto',maxWidth:600}}>
                   {currentSession.pdfUrl ? (
                     isImageAsset(currentSession.pdfUrl) ? (
-                      <img src={currentSession.pdfUrl} alt={currentSession.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
+                      <img key={currentSession.id} src={currentSession.pdfUrl} alt={currentSession.title} style={{width:'100%',height:'100%',objectFit:'contain',background:'#fff'}} />
                     ) : (
-                      <DocumentPreview src={currentSession.pdfUrl} title={currentSession.title} />
+                      <DocumentPreview key={currentSession.id} src={currentSession.pdfUrl} title={currentSession.title} />
                     )
                   ) : (
                     <div style={{padding:24}}><strong>{currentSession.title}</strong></div>
