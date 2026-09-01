@@ -59,12 +59,12 @@ create policy "Authenticated users can read reports"
 on public.reports for select to authenticated
 using (
   (auth.jwt() ->> 'email') = 'amtjt@class.toyoiryo.ac.jp'
-  or (auth.jwt() -> 'app_metadata' ->> 'role') = 'staff'
+  or (auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp'
 );
 create policy "Staff can manage reports"
 on public.reports for all to authenticated
-using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff')
-with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff');
+using ((auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp')
+with check ((auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp');
 
 drop policy if exists "Public can read workshops" on public.workshops;
 drop policy if exists "Authenticated users can read workshops" on public.workshops;
@@ -73,12 +73,12 @@ create policy "Authenticated users can read workshops"
 on public.workshops for select to authenticated
 using (
   (auth.jwt() ->> 'email') = 'amtjt@class.toyoiryo.ac.jp'
-  or (auth.jwt() -> 'app_metadata' ->> 'role') = 'staff'
+  or (auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp'
 );
 create policy "Staff can manage workshops"
 on public.workshops for all to authenticated
-using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff')
-with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff');
+using ((auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp')
+with check ((auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp');
 
 drop policy if exists "Public can read job hunting tips" on public.job_hunting_tips;
 drop policy if exists "Authenticated users can read job hunting tips" on public.job_hunting_tips;
@@ -87,12 +87,12 @@ create policy "Authenticated users can read job hunting tips"
 on public.job_hunting_tips for select to authenticated
 using (
   (auth.jwt() ->> 'email') = 'amtjt@class.toyoiryo.ac.jp'
-  or (auth.jwt() -> 'app_metadata' ->> 'role') = 'staff'
+  or (auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp'
 );
 create policy "Staff can manage job hunting tips"
 on public.job_hunting_tips for all to authenticated
-using ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff')
-with check ((auth.jwt() -> 'app_metadata' ->> 'role') = 'staff');
+using ((auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp')
+with check ((auth.jwt() ->> 'email') = 'career@toyoiryo.ac.jp');
 
 insert into public.reports (
   id,

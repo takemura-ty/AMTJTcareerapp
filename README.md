@@ -27,9 +27,6 @@ Supabase Setup
 NEXT_PUBLIC_SUPABASE_URL=your-project-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-STUDENT_LOGIN_ID=your-student-login-id
-STUDENT_LOGIN_PASSWORD=your-student-login-password
-STUDENT_SESSION_SECRET=a-long-random-secret
 ```
 
 3. Run the SQL in [supabase/schema.sql](supabase/schema.sql) inside the Supabase SQL Editor.
@@ -40,9 +37,8 @@ If the environment variables are not set, the app continues to use the existing 
 Supabase Authentication and RLS
 -------------------------------
 
-1. In Supabase Dashboard, open Authentication > Users and create the student user with email `amtjt@class.toyoiryo.ac.jp` and the assigned password. Turn off "Auto Confirm User" only when email confirmation is required for your project.
-2. For every staff user, set `app_metadata` to `{ "role": "staff" }` using the Supabase Auth Admin API or Dashboard user metadata editor. Do not use `user_metadata` for roles because users can change it themselves.
-3. Run the current [supabase/schema.sql](supabase/schema.sql) in SQL Editor. It enables RLS so only the student account and staff users can read reports and documents; only staff users can write them. The `career-files` bucket is private and documents are delivered with one-hour signed URLs.
+1. In Supabase Dashboard, open Authentication > Users and create these email/password users: `career@toyoiryo.ac.jp` for staff and `amtjt@class.toyoiryo.ac.jp` for students. Confirm each user if email confirmation is enabled.
+2. Run the current [supabase/schema.sql](supabase/schema.sql) in SQL Editor. It enables RLS so only those two accounts can read reports and documents; only `career@toyoiryo.ac.jp` can write them. The `career-files` bucket is private and documents are delivered with one-hour signed URLs.
 
 File Uploads
 ------------
