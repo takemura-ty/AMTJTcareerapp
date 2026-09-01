@@ -17,19 +17,33 @@ function formatUpdatedDate(value?: string) {
 export default function ReportBrowser({ reports, reportType, detailPath, showClinicListGridPaper = false }: ReportBrowserProps) {
   const [selectedRegion, setSelectedRegion] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
-  const [rankingSearchTerm, setRankingSearchTerm] = useState('')
+  const [selectedMajor, setSelectedMajor] = useState('')
+  const [selectedYear, setSelectedYear] = useState('')
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState('')
+  const [appliedMajor, setAppliedMajor] = useState('')
+  const [appliedYear, setAppliedYear] = useState('')
   const router = useRouter()
 
   function openClinicDetail(clinicKey: string) {
     router.push({ pathname: detailPath, query: { type: reportType, clinic: clinicKey } })
   }
 
+  const availableYears = useMemo(() => (
+    reports
+      .filter(report => (reportType ? report.type === reportType : true))
+      .map(report => (report.updatedAt || report.date).slice(0, 4))
+      .filter((year, index, years) => year && years.indexOf(year) === index)
+      .sort((left, right) => right.localeCompare(left))
+  ), [reportType, reports])
+
   const reportsForSelectedRegion = useMemo(() => (
     reports
       .filter(report => (reportType ? report.type === reportType : true))
       .filter(report => (selectedRegion ? report.region === selectedRegion : true))
+      .filter(report => (appliedMajor ? report.major === appliedMajor : true))
+      .filter(report => (appliedYear ? (report.updatedAt || report.date).startsWith(appliedYear) : true))
       .sort((left, right) => right.date.localeCompare(left.date))
-  ), [reportType, reports, selectedRegion])
+  ), [appliedMajor, appliedYear, reportType, reports, selectedRegion])
 
   function filterBySearchTerm(sourceReports: Report[], value: string) {
     const normalizedSearchTerm = value.trim().toLocaleLowerCase('ja-JP')
@@ -41,27 +55,21 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
   }
 
   const filteredReports = useMemo(
-    () => filterBySearchTerm(reportsForSelectedRegion, searchTerm),
-    [reportsForSelectedRegion, searchTerm]
-  )
-
-  const rankingReports = useMemo(
-    () => filterBySearchTerm(reportsForSelectedRegion, rankingSearchTerm),
-    [rankingSearchTerm, reportsForSelectedRegion]
+    () => filterBySearchTerm(reportsForSelectedRegion, appliedSearchTerm),
+    [appliedSearchTerm, reportsForSelectedRegion]
   )
 
   const clinicGroups = useMemo(() => groupByClinic(filteredReports), [filteredReports])
-  const rankingClinicGroups = useMemo(() => groupByClinic(rankingReports), [rankingReports])
 
   const reportRanking = useMemo(() => (
-    [...rankingClinicGroups]
+    [...clinicGroups]
       .sort((left, right) => {
         const reportCountCompare = right.reports.length - left.reports.length
         if (reportCountCompare !== 0) return reportCountCompare
         return left.company.localeCompare(right.company, 'ja')
       })
       .slice(0, 3)
-  ), [rankingClinicGroups])
+  ), [clinicGroups])
 
   const groupedByPrefecture = useMemo(() => {
     const byPrefecture = new Map<string, ClinicGroup[]>()
@@ -95,10 +103,13 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
         .toolbar {
           display: flex;
           justify-content: center;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
           margin-bottom: 20px;
         }
 
-        .region-select {
+        .filter-select {
           width: min(260px, 100%);
           min-height: 44px;
           padding: 10px 12px;
@@ -117,6 +128,15 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
           background: #fff;
           box-sizing: border-box;
           font-size: 16px;
+        }
+
+        .search-button {
+          min-height: 44px;
+          padding: 10px 18px;
+          background: var(--hinata-blue);
+          color: #fff;
+          font-size: 16px;
+          white-space: nowrap;
         }
 
         .layout {
@@ -297,8 +317,12 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
             flex-direction: column;
           }
 
-          .region-select,
+          .filter-select,
           .search-input {
+            width: 100%;
+          }
+
+          .search-button {
             width: 100%;
           }
 
@@ -340,13 +364,24 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
         ) : null}
         <form className="toolbar" onSubmit={event => {
           event.preventDefault()
-          setRankingSearchTerm(searchTerm)
+          setAppliedSearchTerm(searchTerm)
+          setAppliedMajor(selectedMajor)
+          setAppliedYear(selectedYear)
         }}>
-          <select className="region-select" value={selectedRegion} onChange={event => setSelectedRegion(event.target.value)}>
+          <select className="filter-select" value={selectedRegion} onChange={event => setSelectedRegion(event.target.value)}>
             <option value="">すべての都道府県</option>
             {PREFECTURES.map(prefecture => (
               <option key={prefecture} value={prefecture}>{formatPrefecture(prefecture)}</option>
             ))}
+          </select>
+          <select className="filter-select" value={selectedMajor} onChange={event => setSelectedMajor(event.target.value)} aria-label="学科を選択">
+            <option value="">すべての学科</option>
+            <option value="shinkyu">鍼灸師学科</option>
+            <option value="judo">柔道整復師学科</option>
+          </select>
+          <select className="filter-select" value={selectedYear} onChange={event => setSelectedYear(event.target.value)} aria-label="年度を選択">
+            <option value="">すべての年度</option>
+            {availableYears.map(year => <option key={year} value={year}>{year}年度</option>)}
           </select>
           <input
             className="search-input"
@@ -356,6 +391,7 @@ export default function ReportBrowser({ reports, reportType, detailPath, showCli
             placeholder="治療院名・市町村名で検索"
             aria-label="治療院名・市町村名で検索"
           />
+          <button type="submit" className="button search-button">検索</button>
         </form>
 
         <div className="layout">
