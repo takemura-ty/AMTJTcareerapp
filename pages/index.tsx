@@ -31,7 +31,11 @@ export default function Home() {
         password: normalizedPassword
       })
 
-      if (signInError || getUserRole(data.user) !== role) {
+      const userRole = getUserRole(data.user)
+      const isAllowed = role === 'student'
+        ? userRole === 'student' || userRole === 'staff'
+        : userRole === 'staff'
+      if (signInError || !isAllowed) {
         await supabase.auth.signOut()
         setError(role === 'staff' ? '教員IDまたはパスワードが正しくありません。' : '学生IDまたはパスワードが正しくありません。')
         return
